@@ -2,13 +2,20 @@ package com.github.rasmussaks.akenajalukku;
 
 import android.Manifest;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.location.Location;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 
+import com.akexorcist.googledirection.DirectionCallback;
+import com.akexorcist.googledirection.GoogleDirection;
+import com.akexorcist.googledirection.model.Direction;
+import com.akexorcist.googledirection.model.Route;
+import com.akexorcist.googledirection.util.DirectionConverter;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationServices;
@@ -17,10 +24,16 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.LatLngBounds;
+import com.google.android.gms.maps.model.MarkerOptions;
 
-public class MapActivity extends AppCompatActivity implements OnMapReadyCallback, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
+import java.util.ArrayList;
+
+public class MapActivity extends AppCompatActivity implements OnMapReadyCallback, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, DirectionCallback {
 
     private static final int REQUEST_TO_SETUP_MAP = 1;
+    private static String TAG = "aken-ajalukku";
+    private static LatLng TEST_MARKER = new LatLng(58.3806563, 26.7241506);
     private GoogleMap map;
     private GoogleApiClient googleApiClient;
     private Location lastLocation;
@@ -83,6 +96,13 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         }
         if (lastLocation != null && map != null) {
             map.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(lastLocation.getLatitude(), lastLocation.getLongitude()), 15));
+            Log.v(TAG, "Getting directions");
+            GoogleDirection
+                    .withServerKey(null)
+                    .from(new LatLng(lastLocation.getLatitude(), lastLocation.getLongitude()))
+                    .to(TEST_MARKER)
+                    .transportMode("walking")
+                    .execute(this);
         }
     }
 
@@ -98,6 +118,26 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
 
     @Override
     public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
+
+    }
+
+    @Override
+    public void onDirectionSuccess(Direction direction, String rawBody) {
+        Log.v(TAG, "Got directions");
+        Log.v(TAG, rawBody);
+        if (direction.isOK()) {
+            map.addMarker(new MarkerOptions().position(TEST_MARKER));
+            Log.v(TAG, direction.getRouteList().toString());
+            Route route = direction.getRouteList().get(0);
+            ArrayList<LatLng> points = new ArrayList<>(route.getOverviewPolyline().getPointList());
+            map.addPolyline(DirectionConverter.createPolyline(this, points, 5, Color.RED));
+            LatLngBounds bnds = LatLngBounds.builder().include(new LatLng(lastLocation.getLatitude(), lastLocation.getLongitude())).include(TEST_MARKER).build();
+            map.animateCamera(CameraUpdateFactory.newLatLngBounds(bnds, 100));
+        }
+    }
+
+    @Override
+    public void onDirectionFailure(Throwable t) {
 
     }
 }
