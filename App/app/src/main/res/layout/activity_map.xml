@@ -14,4 +14,16 @@
         android:layout_alignParentTop="true"
         tools:context="com.github.rasmussaks.akenajalukku.MapActivity" />
 
+    <ImageButton
+        android:id="@+id/button2"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentTop="true"
+        android:layout_margin="15dp"
+        android:background="@drawable/round_button"
+        android:onClick="onSettingsButtonClick"
+        android:src="@drawable/ic_setting_dark" />
+
 </RelativeLayout>

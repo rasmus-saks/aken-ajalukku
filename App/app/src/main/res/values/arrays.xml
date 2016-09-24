@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="pref_language">
+        <item>@string/english</item>
+        <item>@string/estonian</item>
+    </string-array>
+    <string-array name="pref_language_values">
+        <item>EN</item>
+        <item>ET</item>
+    </string-array>
+</resources>

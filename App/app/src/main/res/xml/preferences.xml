@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <SwitchPreference
+        android:defaultValue="true"
+        android:key="pref_notifications"
+        android:title="@string/pref_notifications" />
+    <SwitchPreference
+        android:defaultValue="true"
+        android:key="pref_wifionly"
+        android:title="@string/pref_wifionly" />
+    <ListPreference
+        android:defaultValue="EN"
+        android:entries="@array/pref_language"
+        android:entryValues="@array/pref_language_values"
+        android:key="pref_language"
+        android:title="@string/language" />
+    <Preference
+        android:key="pref_resetTutorial"
+        android:title="@string/pref_resetTutorial" />
+    <Preference
+        android:key="pref_clearData"
+        android:title="@string/pref_clearData" />
+</PreferenceScreen>
