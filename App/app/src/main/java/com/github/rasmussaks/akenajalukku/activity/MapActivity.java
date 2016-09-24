@@ -1,10 +1,11 @@
-package com.github.rasmussaks.akenajalukku;
+package com.github.rasmussaks.akenajalukku.activity;
 
 import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.location.Location;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -22,6 +23,8 @@ import com.akexorcist.googledirection.GoogleDirection;
 import com.akexorcist.googledirection.model.Direction;
 import com.akexorcist.googledirection.model.Route;
 import com.akexorcist.googledirection.util.DirectionConverter;
+import com.github.rasmussaks.akenajalukku.R;
+import com.github.rasmussaks.akenajalukku.model.PointOfInterest;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationServices;
@@ -37,15 +40,16 @@ import com.google.android.gms.maps.model.MarkerOptions;
 
 import java.util.ArrayList;
 
-public class MapActivity extends AppCompatActivity implements OnMapReadyCallback, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, DirectionCallback {
+public class MapActivity extends AppCompatActivity implements OnMapReadyCallback, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, DirectionCallback, GoogleMap.OnMarkerClickListener {
 
     private static final int REQUEST_TO_SETUP_MAP = 1;
     private static String TAG = "aken-ajalukku";
     private static LatLng TEST_MARKER = new LatLng(58.3806563, 26.7241506);
+    private static PointOfInterest TEST_POI = new PointOfInterest(TEST_MARKER, "Kompanii 2", "A cool place for cool kids (and kittens)", "http://i.imgur.com/1vPMEJK.png");
     private GoogleMap map;
     private GoogleApiClient googleApiClient;
     private Location lastLocation;
-    private Marker currentMarker;
+    private PointOfInterest currentPOI;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,11 +67,17 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                     .addApi(LocationServices.API)
                     .build();
         }
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            getWindow().getDecorView().setSystemUiVisibility(
+                    View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+                            | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN);
+        }
     }
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
         map = googleMap;
+        map.setOnMarkerClickListener(this);
         if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, REQUEST_TO_SETUP_MAP);
             return;
@@ -124,7 +134,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         if (lastLocation != null && map != null) {
             Log.v(TAG, "Getting directions");
             focusOnUser(false);
-            setDirectionsLine(TEST_MARKER);
+            setFocusedPOI(TEST_POI);
         }
     }
 
@@ -140,14 +150,17 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         }
     }
 
-    public void setDirectionsLine(LatLng destination) {
+    public void setFocusedPOI(PointOfInterest poi) {
+        currentPOI = poi;
         GoogleDirection
                 .withServerKey(null)
                 .from(new LatLng(lastLocation.getLatitude(), lastLocation.getLongitude()))
-                .to(destination)
+                .to(poi.getLocation())
                 .transportMode("walking")
                 .execute(this);
+
     }
+
 
     @Override
     public void onConnected(@Nullable Bundle bundle) {
@@ -166,14 +179,14 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
 
     @Override
     public void onDirectionSuccess(Direction direction, String rawBody) {
-        if (currentMarker != null) {
-            currentMarker.remove();
-            currentMarker = null;
+        if (currentPOI != null && currentPOI.getMarker() != null) {
+            currentPOI.getMarker().remove();
+            currentPOI.setMarker(null);
         }
         Log.v(TAG, "Got directions");
         Log.v(TAG, rawBody);
         if (direction.isOK()) {
-            currentMarker = map.addMarker(new MarkerOptions().position(TEST_MARKER));
+            currentPOI.setMarker(map.addMarker(new MarkerOptions().position(TEST_MARKER)));
             Log.v(TAG, direction.getRouteList().toString());
             Route route = direction.getRouteList().get(0);
             ArrayList<LatLng> points = new ArrayList<>(route.getOverviewPolyline().getPointList());
@@ -195,5 +208,16 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     private void openSettings() {
         Intent intent = new Intent(this, SettingsActivity.class);
         startActivity(intent);
+    }
+
+    @Override
+    public boolean onMarkerClick(Marker marker) {
+        if (currentPOI.getMarker().equals(marker)) {
+            Intent intent = new Intent(this, POIDetailActivity.class);
+            intent.putExtra("poi", currentPOI);
+            startActivity(intent);
+            return true;
+        }
+        return false;
     }
 }

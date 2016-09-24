@@ -1,10 +1,13 @@
-package com.github.rasmussaks.akenajalukku;
+package com.github.rasmussaks.akenajalukku.activity;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
+
+import com.github.rasmussaks.akenajalukku.R;
+import com.github.rasmussaks.akenajalukku.fragment.SettingsFragment;
 
 public class SettingsActivity extends AppCompatActivity {
     @Override

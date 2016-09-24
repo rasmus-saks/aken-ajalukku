@@ -1,4 +1,4 @@
-package com.github.rasmussaks.akenajalukku;
+package com.github.rasmussaks.akenajalukku.fragment;
 
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -6,6 +6,8 @@ import android.preference.ListPreference;
 import android.preference.Preference;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceScreen;
+
+import com.github.rasmussaks.akenajalukku.R;
 
 public class SettingsFragment extends PreferenceFragment implements SharedPreferences.OnSharedPreferenceChangeListener {
     @Override
