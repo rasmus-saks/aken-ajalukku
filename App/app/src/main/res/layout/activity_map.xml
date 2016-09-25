@@ -15,7 +15,7 @@
         tools:context="com.github.rasmussaks.akenajalukku.activity.MapActivity" />
 
     <ImageButton
-        android:id="@+id/button2"
+        android:id="@+id/settings_button"
         android:layout_width="50dp"
         android:layout_height="50dp"
         android:layout_alignParentEnd="true"

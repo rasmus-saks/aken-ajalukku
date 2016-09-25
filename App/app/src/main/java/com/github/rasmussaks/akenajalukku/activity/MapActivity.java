@@ -37,8 +37,10 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.Polyline;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class MapActivity extends AppCompatActivity implements OnMapReadyCallback, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, DirectionCallback, GoogleMap.OnMarkerClickListener {
 
@@ -50,6 +52,8 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     private GoogleApiClient googleApiClient;
     private Location lastLocation;
     private PointOfInterest currentPOI;
+    private List<PointOfInterest> pois = new ArrayList<>();
+    private Polyline currentPolyline;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -124,6 +128,11 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         map.setMyLocationEnabled(true);
         map.getUiSettings().setCompassEnabled(true);
         map.getUiSettings().setMyLocationButtonEnabled(false);
+
+        addPOI(new PointOfInterest(new LatLng(58.3824298, 26.7145573), "Baeri ja Jakobi ristmik", "Päris põnev", "http://i.imgur.com/FGCgIB7.jpg"));
+        addPOI(new PointOfInterest(new LatLng(58.380144, 26.7223035), "Raekoja plats", "Raekoda on cool", "http://i.imgur.com/ewugjb2.jpg"));
+        addPOI(new PointOfInterest(new LatLng(58.3740385, 26.7071558), "Tartu rongijaam", "Choo choo", "http://i.imgur.com/mRFDWKl.jpg"));
+
         updateMap();
     }
 
@@ -134,7 +143,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         if (lastLocation != null && map != null) {
             Log.v(TAG, "Getting directions");
             focusOnUser(false);
-            setFocusedPOI(TEST_POI);
+            setFocusedPOI(pois.get(0));
         }
     }
 
@@ -148,6 +157,11 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
             }
 
         }
+    }
+
+    public void addPOI(PointOfInterest poi) {
+        pois.add(poi);
+        poi.setMarker(map.addMarker(new MarkerOptions().position(poi.getLocation())));
     }
 
     public void setFocusedPOI(PointOfInterest poi) {
@@ -183,16 +197,22 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
             currentPOI.getMarker().remove();
             currentPOI.setMarker(null);
         }
+        if (currentPolyline != null) {
+            currentPolyline.remove();
+        }
         Log.v(TAG, "Got directions");
         Log.v(TAG, rawBody);
         if (direction.isOK()) {
-            currentPOI.setMarker(map.addMarker(new MarkerOptions().position(TEST_MARKER)));
+            currentPOI.setMarker(map.addMarker(new MarkerOptions().position(currentPOI.getLocation())));
             Log.v(TAG, direction.getRouteList().toString());
             Route route = direction.getRouteList().get(0);
             ArrayList<LatLng> points = new ArrayList<>(route.getOverviewPolyline().getPointList());
-            map.addPolyline(DirectionConverter.createPolyline(this, points, 5, Color.RED));
-            LatLngBounds bnds = LatLngBounds.builder().include(new LatLng(lastLocation.getLatitude(), lastLocation.getLongitude())).include(TEST_MARKER).build();
-            map.animateCamera(CameraUpdateFactory.newLatLngBounds(bnds, 100));
+            currentPolyline = map.addPolyline(DirectionConverter.createPolyline(this, points, 5, Color.RED));
+            LatLngBounds.Builder bnds = LatLngBounds.builder().include(new LatLng(lastLocation.getLatitude(), lastLocation.getLongitude()));
+            for (LatLng point : points) {
+                bnds.include(point);
+            }
+            map.animateCamera(CameraUpdateFactory.newLatLngBounds(bnds.build(), 200));
         }
     }
 
@@ -212,11 +232,17 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
 
     @Override
     public boolean onMarkerClick(Marker marker) {
-        if (currentPOI.getMarker().equals(marker)) {
-            Intent intent = new Intent(this, POIDetailActivity.class);
-            intent.putExtra("poi", currentPOI);
-            startActivity(intent);
-            return true;
+        for (PointOfInterest poi : pois) {
+            if (poi.getMarker().equals(marker)) {
+                if (currentPOI == poi) {
+                    Intent intent = new Intent(this, POIDetailActivity.class);
+                    intent.putExtra("poi", currentPOI);
+                    startActivity(intent);
+                } else {
+                    setFocusedPOI(poi);
+                }
+                return true;
+            }
         }
         return false;
     }
