@@ -26,6 +26,6 @@
         android:layout_marginTop="30dp"
         android:background="@drawable/round_button"
         android:onClick="onSettingsButtonClick"
-        android:src="@drawable/ic_setting_dark" />
+        android:src="@drawable/ic_settings_white_24dp" />
 
 </RelativeLayout>
