@@ -39,10 +39,6 @@
             </intent-filter>
         </activity>
         <activity android:name=".activity.SettingsActivity" />
-        <activity
-            android:name=".activity.POIDetailActivity"
-            android:fitsSystemWindows="true"
-            android:theme="@style/AppTheme.NoActionBar" />
     </application>
 
 </manifest>

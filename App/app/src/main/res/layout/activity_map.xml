@@ -1,31 +1,72 @@
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<com.sothree.slidinguppanel.SlidingUpPanelLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:sothree="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/sliding_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".activity.MapActivity">
+    android:gravity="bottom"
+    sothree:umanoOverlay="true"
+    sothree:umanoPanelHeight="68dp"
+    sothree:umanoShadowHeight="0dp">
 
-    <fragment
-        android:id="@+id/map"
-        android:name="com.google.android.gms.maps.SupportMapFragment"
+    <RelativeLayout
+        android:id="@+id/map_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentTop="true"
-        tools:context="com.github.rasmussaks.akenajalukku.activity.MapActivity" />
+        tools:context=".activity.MapActivity">
 
-    <ImageButton
-        android:id="@+id/settings_button"
-        android:layout_width="50dp"
-        android:layout_height="50dp"
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentTop="true"
-        android:layout_marginEnd="15dp"
-        android:layout_marginRight="15dp"
-        android:layout_marginTop="30dp"
-        android:background="@drawable/round_button"
-        android:onClick="onSettingsButtonClick"
-        android:src="@drawable/ic_settings_white_24dp" />
+        <fragment
+            android:id="@+id/map"
+            android:name="com.google.android.gms.maps.SupportMapFragment"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentTop="true"
+            tools:context="com.github.rasmussaks.akenajalukku.activity.MapActivity" />
 
-</RelativeLayout>
+        <ImageButton
+            android:id="@+id/settings_button"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentTop="true"
+            android:layout_marginEnd="15dp"
+            android:layout_marginRight="15dp"
+            android:layout_marginTop="30dp"
+            android:background="@drawable/round_button"
+            android:onClick="onSettingsButtonClick"
+            android:src="@drawable/ic_settings_white_24dp" />
+    </RelativeLayout>
+
+    <LinearLayout
+        android:id="@+id/drawer_wrapper"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:background="@drawable/drawer_background"
+        android:orientation="vertical"
+        android:paddingLeft="24dp"
+        android:paddingRight="24dp"
+        android:paddingTop="30dp">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <ImageButton
+                android:id="@+id/imageButton"
+                android:layout_width="36dp"
+                android:layout_height="36dp"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentRight="true"
+                android:onClick="onCloseDrawer"
+                sothree:srcCompat="@android:drawable/ic_menu_close_clear_cancel" />
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:id="@+id/drawer_container"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+    </LinearLayout>
+</com.sothree.slidinguppanel.SlidingUpPanelLayout>

@@ -10,6 +10,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -24,6 +25,7 @@ import com.akexorcist.googledirection.model.Direction;
 import com.akexorcist.googledirection.model.Route;
 import com.akexorcist.googledirection.util.DirectionConverter;
 import com.github.rasmussaks.akenajalukku.R;
+import com.github.rasmussaks.akenajalukku.fragment.POIDrawerFragment;
 import com.github.rasmussaks.akenajalukku.model.PointOfInterest;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -38,22 +40,25 @@ import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polyline;
+import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class MapActivity extends AppCompatActivity implements OnMapReadyCallback, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, DirectionCallback, GoogleMap.OnMarkerClickListener {
+public class MapActivity extends AppCompatActivity implements OnMapReadyCallback,
+        GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener,
+        DirectionCallback, GoogleMap.OnMarkerClickListener, SlidingUpPanelLayout.PanelSlideListener {
 
     private static final int REQUEST_TO_SETUP_MAP = 1;
     private static String TAG = "aken-ajalukku";
     private static LatLng TEST_MARKER = new LatLng(58.3806563, 26.7241506);
-    private static PointOfInterest TEST_POI = new PointOfInterest(TEST_MARKER, "Kompanii 2", "A cool place for cool kids (and kittens)", "http://i.imgur.com/1vPMEJK.png");
     private GoogleMap map;
     private GoogleApiClient googleApiClient;
     private Location lastLocation;
     private PointOfInterest currentPOI;
     private List<PointOfInterest> pois = new ArrayList<>();
     private Polyline currentPolyline;
+    private SlidingUpPanelLayout drawerLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -64,6 +69,10 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
+        drawerLayout = (SlidingUpPanelLayout) findViewById(R.id.sliding_layout);
+        drawerLayout.addPanelSlideListener(this);
+        drawerLayout.setPanelHeight(0);
+        drawerLayout.setTouchEnabled(false);
         if (googleApiClient == null) {
             googleApiClient = new GoogleApiClient.Builder(this)
                     .addConnectionCallbacks(this)
@@ -140,22 +149,31 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
             lastLocation = LocationServices.FusedLocationApi.getLastLocation(googleApiClient);
         }
+
+
         if (lastLocation != null && map != null) {
             Log.v(TAG, "Getting directions");
-            focusOnUser(false);
+            resetCamera(false);
             setFocusedPOI(pois.get(0));
         }
     }
 
-    public void focusOnUser(boolean animate) {
-        if (map != null && lastLocation != null) {
-            CameraUpdate update = CameraUpdateFactory.newLatLngZoom(new LatLng(lastLocation.getLatitude(), lastLocation.getLongitude()), 15);
-            if (animate) {
-                map.animateCamera(update);
+    public void resetCamera(boolean animate) {
+        if (map != null) {
+            if (lastLocation != null) {
+                CameraUpdate update = CameraUpdateFactory.newLatLngZoom(new LatLng(lastLocation.getLatitude(), lastLocation.getLongitude()), 15);
+                if (animate) {
+                    map.animateCamera(update);
+                } else {
+                    map.moveCamera(update);
+                }
             } else {
-                map.moveCamera(update);
+                LatLngBounds.Builder bounds = LatLngBounds.builder();
+                for (PointOfInterest poi : pois) {
+                    bounds.include(poi.getLocation());
+                }
+                map.moveCamera(CameraUpdateFactory.newLatLngBounds(bounds.build(), 200));
             }
-
         }
     }
 
@@ -166,12 +184,25 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
 
     public void setFocusedPOI(PointOfInterest poi) {
         currentPOI = poi;
-        GoogleDirection
-                .withServerKey(null)
-                .from(new LatLng(lastLocation.getLatitude(), lastLocation.getLongitude()))
-                .to(poi.getLocation())
-                .transportMode("walking")
-                .execute(this);
+        if (lastLocation != null) {
+            GoogleDirection
+                    .withServerKey(null)
+                    .from(new LatLng(lastLocation.getLatitude(), lastLocation.getLongitude()))
+                    .to(poi.getLocation())
+                    .transportMode("walking")
+                    .execute(this);
+        } else { //No location available at the moment, just focus the marker
+            if (currentPOI != null && currentPOI.getMarker() != null) {
+                currentPOI.getMarker().remove();
+                currentPOI.setMarker(null);
+            }
+            if (currentPolyline != null) {
+                currentPolyline.remove();
+            }
+            Log.v(TAG, "Setting focused POI");
+            currentPOI.setMarker(map.addMarker(new MarkerOptions().position(currentPOI.getLocation())));
+            map.animateCamera(CameraUpdateFactory.newLatLngZoom(poi.getLocation(), 17.5f));
+        }
 
     }
 
@@ -235,9 +266,14 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         for (PointOfInterest poi : pois) {
             if (poi.getMarker().equals(marker)) {
                 if (currentPOI == poi) {
-                    Intent intent = new Intent(this, POIDetailActivity.class);
-                    intent.putExtra("poi", currentPOI);
-                    startActivity(intent);
+                    POIDrawerFragment fragment = new POIDrawerFragment();
+                    Bundle bundle = new Bundle();
+                    bundle.putParcelable("poi", poi);
+                    fragment.setArguments(bundle);
+                    FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+                    transaction.replace(R.id.drawer_container, fragment);
+                    transaction.commit();
+                    drawerLayout.setPanelState(SlidingUpPanelLayout.PanelState.EXPANDED);
                 } else {
                     setFocusedPOI(poi);
                 }
@@ -245,5 +281,20 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
             }
         }
         return false;
+    }
+
+
+    @Override
+    public void onPanelSlide(View panel, float slideOffset) {
+
+    }
+
+    @Override
+    public void onPanelStateChanged(View panel, SlidingUpPanelLayout.PanelState previousState, SlidingUpPanelLayout.PanelState newState) {
+
+    }
+
+    public void onCloseDrawer(View view) {
+        drawerLayout.setPanelState(SlidingUpPanelLayout.PanelState.HIDDEN);
     }
 }
