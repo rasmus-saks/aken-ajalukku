@@ -8,14 +8,40 @@ android {
         applicationId "com.github.rasmussaks.akenajalukku"
         minSdkVersion 16
         targetSdkVersion 24
-        versionCode 1
+        def greenhouseBuild = System.getenv()["GREENHOUSE_BUILD"]
+        logger.quiet(System.getenv().toMapString())
+        if (greenhouseBuild) {
+            logger.quiet("GREENHOUSE_BUILD variable is true")
+            def buildNumber = System.getenv()["BUILD_NUMBER"]
+            logger.quiet("BUILD_NUMBER: " + buildNumber)
+            versionCode = Integer.valueOf(buildNumber)
+        } else {
+            logger.quiet("GREENHOUSE_BUILD variable is false")
+            versionCode 2
+        }
         versionName "iteration-1"
         vectorDrawables.useSupportLibrary = true
         multiDexEnabled true
     }
+    signingConfigs {
+        release {
+            if (System.getenv()["CI"]) { // CI=true is exported by Greenhouse
+                storeFile file(System.getenv()["GH_KEYSTORE_PATH"])
+                storePassword System.getenv()["GH_KEYSTORE_PASSWORD"]
+                keyAlias System.getenv()["GH_KEY_ALIAS"]
+                keyPassword System.getenv()["GH_KEY_PASSWORD"]
+            } else {
+                storeFile file(RELEASE_STORE_FILE)
+                storePassword RELEASE_STORE_PASSWORD
+                keyAlias RELEASE_KEY_ALIAS
+                keyPassword RELEASE_KEY_PASSWORD
+            }
+        }
+    }
     buildTypes {
         release {
             minifyEnabled false
+            signingConfig signingConfigs.release
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
