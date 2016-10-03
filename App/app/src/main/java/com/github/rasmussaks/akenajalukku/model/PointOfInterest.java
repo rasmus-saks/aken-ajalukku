@@ -5,6 +5,7 @@ import android.os.Parcelable;
 
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
+import com.google.android.gms.maps.model.MarkerOptions;
 
 public class PointOfInterest implements Parcelable {
     public static final Creator<PointOfInterest> CREATOR = new Creator<PointOfInterest>() {
@@ -60,6 +61,10 @@ public class PointOfInterest implements Parcelable {
 
     public void setMarker(Marker marker) {
         this.marker = marker;
+    }
+
+    public MarkerOptions getMarkerOptions() {
+        return new MarkerOptions().title(title).position(location);
     }
 
     @Override

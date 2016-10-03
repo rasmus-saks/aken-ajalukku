@@ -43,7 +43,6 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
-import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polyline;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 
@@ -190,7 +189,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
 
     public void addPOI(PointOfInterest poi) {
         pois.add(poi);
-        poi.setMarker(map.addMarker(new MarkerOptions().position(poi.getLocation())));
+        poi.setMarker(map.addMarker(poi.getMarkerOptions()));
     }
 
     public void setFocusedPOI(PointOfInterest poi) {
@@ -221,14 +220,14 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     public void highlightPoiMarker(PointOfInterest poi) {
         if (poi != null) {
             if (poi.getMarker() != null) poi.getMarker().remove();
-            poi.setMarker(map.addMarker(new MarkerOptions().icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE)).position(poi.getLocation())));
+            poi.setMarker(map.addMarker(poi.getMarkerOptions().icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE))));
         }
     }
 
     public void resetPoiMarker(PointOfInterest poi) {
         if (poi != null) {
             if (poi.getMarker() != null) poi.getMarker().remove();
-            poi.setMarker(map.addMarker(new MarkerOptions().position(poi.getLocation())));
+            poi.setMarker(map.addMarker(poi.getMarkerOptions()));
         }
     }
 
