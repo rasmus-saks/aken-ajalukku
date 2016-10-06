@@ -1,10 +1,11 @@
 package com.github.rasmussaks.akenajalukku.fragment;
 
+import android.annotation.SuppressLint;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -12,12 +13,14 @@ import com.bumptech.glide.Glide;
 import com.github.rasmussaks.akenajalukku.R;
 import com.github.rasmussaks.akenajalukku.model.PointOfInterest;
 
-public class POIDrawerFragment extends Fragment {
+public class POIDrawerFragment extends DrawerFragment implements View.OnClickListener {
 
     private PointOfInterest poi;
     private TextView title;
     private ImageView img;
     private TextView description;
+    private ImageButton downloadButton;
+    private TextView downloadText;
 
     public POIDrawerFragment() {
         // Required empty public constructor
@@ -31,6 +34,7 @@ public class POIDrawerFragment extends Fragment {
         }
     }
 
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -41,8 +45,24 @@ public class POIDrawerFragment extends Fragment {
         description = (TextView) view.findViewById(R.id.poi_description);
         title.setText(poi.getTitle());
         description.setText(poi.getDescription());
+        ImageButton close = (ImageButton) view.findViewById(R.id.close_button);
+        close.setOnClickListener(this);
+        downloadButton = (ImageButton) view.findViewById(R.id.download_button);
+        downloadButton.setOnClickListener(this);
+        downloadText = (TextView) view.findViewById(R.id.download_text);
         Glide.with(this).load(poi.getImageUrl()).centerCrop().into(img);
         return view;
     }
 
+    @SuppressLint("SetTextI18n")
+    @Override
+    public void onClick(View v) {
+        if (v.getId() == R.id.close_button) {
+            closeDrawer();
+        } else if (v.getId() == R.id.download_button) {
+            downloadButton.setVisibility(View.GONE);
+            downloadText.setVisibility(View.VISIBLE);
+            downloadText.setText(String.format(getString(R.string.download_text), 1) + "%");
+        }
+    }
 }

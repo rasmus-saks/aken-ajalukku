@@ -14,9 +14,6 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
 
 import com.akexorcist.googledirection.DirectionCallback;
@@ -25,6 +22,7 @@ import com.akexorcist.googledirection.model.Direction;
 import com.akexorcist.googledirection.model.Route;
 import com.akexorcist.googledirection.util.DirectionConverter;
 import com.github.rasmussaks.akenajalukku.R;
+import com.github.rasmussaks.akenajalukku.fragment.DrawerFragment;
 import com.github.rasmussaks.akenajalukku.fragment.POIDrawerFragment;
 import com.github.rasmussaks.akenajalukku.model.PointOfInterest;
 import com.google.android.gms.common.ConnectionResult;
@@ -52,7 +50,7 @@ import java.util.List;
 public class MapActivity extends AppCompatActivity implements OnMapReadyCallback,
         GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener,
         DirectionCallback, GoogleMap.OnMarkerClickListener, SlidingUpPanelLayout.PanelSlideListener,
-        LocationListener {
+        LocationListener, DrawerFragment.DrawerFragmentListener {
 
     private static final int REQUEST_TO_SETUP_MAP = 1;
     private static final int REQUEST_TO_REGISTER_LISTENER = 2;
@@ -110,22 +108,6 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         if (googleApiClient != null) {
             googleApiClient.connect();
         }
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.action_menu, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        if (item.getItemId() == R.id.action_settings) {
-            openSettings();
-            return true;
-        }
-        return false;
     }
 
     @Override
@@ -311,6 +293,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                     POIDrawerFragment fragment = new POIDrawerFragment();
                     Bundle bundle = new Bundle();
                     bundle.putParcelable("poi", poi);
+                    fragment.setDrawerFragmentListener(this);
                     fragment.setArguments(bundle);
                     FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
                     transaction.replace(R.id.drawer_container, fragment);
@@ -336,13 +319,14 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
 
     }
 
-    public void onCloseDrawer(View view) {
-        drawerLayout.setPanelState(SlidingUpPanelLayout.PanelState.HIDDEN);
-    }
-
     @Override
     public void onLocationChanged(Location location) {
         lastLocation = location;
         Log.v(TAG, "Location changed");
+    }
+
+    @Override
+    public void onCloseDrawer() {
+        drawerLayout.setPanelState(SlidingUpPanelLayout.PanelState.HIDDEN);
     }
 }

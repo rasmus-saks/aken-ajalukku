@@ -11,4 +11,6 @@
     <string name="title_activity_settings">Settings</string>
     <string name="action_settings">Settings</string>
     <string name="language">Language</string>
+    <string name="the_story">The story</string>
+    <string name="download_text">Downloading %1$d</string>
 </resources>

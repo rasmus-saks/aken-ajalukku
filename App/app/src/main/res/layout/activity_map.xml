@@ -32,12 +32,12 @@
             android:layout_alignParentEnd="true"
             android:layout_alignParentRight="true"
             android:layout_alignParentTop="true"
-            android:layout_marginEnd="15dp"
-            android:layout_marginRight="15dp"
-            android:layout_marginTop="30dp"
-            android:background="@drawable/round_button"
+            android:layout_marginEnd="0dp"
+            android:layout_marginRight="0dp"
+            android:layout_marginTop="24dp"
+            android:background="@android:color/transparent"
             android:onClick="onSettingsButtonClick"
-            android:src="@drawable/ic_settings_white_24dp" />
+            android:src="@drawable/ic_settings_black_36dp" />
     </RelativeLayout>
 
     <LinearLayout
@@ -46,24 +46,9 @@
         android:layout_height="match_parent"
         android:background="@drawable/drawer_background"
         android:orientation="vertical"
-        android:paddingLeft="24dp"
-        android:paddingRight="24dp"
+        android:paddingLeft="30dp"
+        android:paddingRight="30dp"
         android:paddingTop="30dp">
-
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-
-            <ImageButton
-                android:id="@+id/imageButton"
-                android:layout_width="36dp"
-                android:layout_height="36dp"
-                android:layout_alignParentEnd="true"
-                android:layout_alignParentRight="true"
-                android:onClick="onCloseDrawer"
-                sothree:srcCompat="@android:drawable/ic_menu_close_clear_cancel" />
-        </RelativeLayout>
-
         <RelativeLayout
             android:id="@+id/drawer_container"
             android:layout_width="wrap_content"
