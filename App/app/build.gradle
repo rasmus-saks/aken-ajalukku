@@ -19,7 +19,7 @@ android {
             logger.quiet("GREENHOUSE_BUILD variable is false")
             versionCode 2
         }
-        versionName "iteration-1"
+        versionName "iteration-2"
         vectorDrawables.useSupportLibrary = true
         multiDexEnabled true
     }
