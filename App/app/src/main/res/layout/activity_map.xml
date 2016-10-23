@@ -27,14 +27,14 @@
 
         <ImageButton
             android:id="@+id/settings_button"
-            android:layout_width="50dp"
-            android:layout_height="50dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:layout_alignParentEnd="true"
             android:layout_alignParentRight="true"
             android:layout_alignParentTop="true"
-            android:layout_marginEnd="0dp"
-            android:layout_marginRight="0dp"
-            android:layout_marginTop="24dp"
+            android:layout_marginEnd="10dp"
+            android:layout_marginRight="10dp"
+            android:layout_marginTop="34dp"
             android:background="@android:color/transparent"
             android:onClick="onSettingsButtonClick"
             android:src="@drawable/ic_settings_black_36dp" />

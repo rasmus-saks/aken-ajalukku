@@ -131,7 +131,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     @SuppressWarnings("MissingPermission")
     private void setupMap() {
         if (enableLocation) map.setMyLocationEnabled(true);
-        map.getUiSettings().setCompassEnabled(true);
+        map.setPadding(0, getResources().getDimensionPixelSize(R.dimen.mapview_top_padding), 0, 0);
         map.getUiSettings().setMyLocationButtonEnabled(false);
 
         addPOI(new PointOfInterest(new LatLng(58.3824298, 26.7145573), "Baeri ja Jakobi ristmik", "Päris põnev", "http://i.imgur.com/FGCgIB7.jpg"));
