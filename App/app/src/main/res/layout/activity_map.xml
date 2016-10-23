@@ -1,4 +1,4 @@
-<com.sothree.slidinguppanel.SlidingUpPanelLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<com.github.rasmussaks.akenajalukku.layout.NoTouchSlidingUpPanelLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:sothree="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/sliding_layout"
@@ -54,4 +54,4 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
     </LinearLayout>
-</com.sothree.slidinguppanel.SlidingUpPanelLayout>
+</com.github.rasmussaks.akenajalukku.layout.NoTouchSlidingUpPanelLayout>

@@ -24,6 +24,7 @@ import com.akexorcist.googledirection.util.DirectionConverter;
 import com.github.rasmussaks.akenajalukku.R;
 import com.github.rasmussaks.akenajalukku.fragment.DrawerFragment;
 import com.github.rasmussaks.akenajalukku.fragment.POIDrawerFragment;
+import com.github.rasmussaks.akenajalukku.layout.NoTouchSlidingUpPanelLayout;
 import com.github.rasmussaks.akenajalukku.model.PointOfInterest;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -72,10 +73,9 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
-        drawerLayout = (SlidingUpPanelLayout) findViewById(R.id.sliding_layout);
+        drawerLayout = (NoTouchSlidingUpPanelLayout) findViewById(R.id.sliding_layout);
         drawerLayout.addPanelSlideListener(this);
         drawerLayout.setPanelHeight(0);
-        drawerLayout.setTouchEnabled(false);
         if (googleApiClient == null) {
             googleApiClient = new GoogleApiClient.Builder(this)
                     .addConnectionCallbacks(this)
