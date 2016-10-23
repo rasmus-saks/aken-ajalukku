@@ -30,7 +30,7 @@ android {
                 storePassword System.getenv()["GH_KEYSTORE_PASSWORD"]
                 keyAlias System.getenv()["GH_KEY_ALIAS"]
                 keyPassword System.getenv()["GH_KEY_PASSWORD"]
-            } else {
+            } else if (project.hasProperty("RELEASE_STORE_FILE")) {
                 storeFile file(RELEASE_STORE_FILE)
                 storePassword RELEASE_STORE_PASSWORD
                 keyAlias RELEASE_KEY_ALIAS
@@ -41,7 +41,9 @@ android {
     buildTypes {
         release {
             minifyEnabled false
-            signingConfig signingConfigs.release
+            if (project.hasProperty("RELEASE_STORE_FILE") || System.getenv()["CI"]) {
+                signingConfig signingConfigs.release
+            }
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }

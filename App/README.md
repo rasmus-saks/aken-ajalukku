@@ -13,6 +13,8 @@ To build the debug version, use
 gradlew assembleDebug
 ```
 Release version can be built using `gradlew assembleRelease`, but it is automatically signed and we will not provide the keystore file or the passwords to do it.
+If you're looking to sign the app with your own keys, refer to [Sign Your App](https://developer.android.com/studio/publish/app-signing.html) in the Android Studio manual for
+generating a keystore file and then set `RELEASE_STORE_FILE`, `RELEASE_STORE_PASSWORD`, `RELEASE_KEY_ALIAS` and `RELEASE_KEY_PASSWORD` in your `~/.gradle/gradle.properties` file.
 
 # License
 This project is released under the GNU GPLv3 license, for more information see `LICENSE.txt`
