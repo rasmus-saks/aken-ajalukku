@@ -54,7 +54,6 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         LocationListener, DrawerFragment.DrawerFragmentListener {
 
     private static final int REQUEST_TO_SETUP_MAP = 1;
-    private static final int REQUEST_TO_REGISTER_LISTENER = 2;
     private static String TAG = "aken-ajalukku";
     private GoogleMap map;
     private GoogleApiClient googleApiClient;
@@ -63,6 +62,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     private List<PointOfInterest> pois = new ArrayList<>();
     private Polyline currentPolyline;
     private SlidingUpPanelLayout drawerLayout;
+    private boolean enableLocation = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -70,12 +70,26 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         ActionBar bar = getSupportActionBar();
         if (bar != null) bar.hide();
         setContentView(R.layout.activity_map);
-        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
-                .findFragmentById(R.id.map);
-        mapFragment.getMapAsync(this);
         drawerLayout = (NoTouchSlidingUpPanelLayout) findViewById(R.id.sliding_layout);
         drawerLayout.addPanelSlideListener(this);
         drawerLayout.setPanelHeight(0);
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            getWindow().getDecorView().setSystemUiVisibility(
+                    View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+                            | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN);
+        }
+        if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, REQUEST_TO_SETUP_MAP);
+        } else {
+            setupListeners();
+        }
+    }
+
+    private void setupListeners() {
+        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
+                .findFragmentById(R.id.map);
+        mapFragment.getMapAsync(this);
         if (googleApiClient == null) {
             googleApiClient = new GoogleApiClient.Builder(this)
                     .addConnectionCallbacks(this)
@@ -83,21 +97,12 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                     .addApi(LocationServices.API)
                     .build();
         }
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            getWindow().getDecorView().setSystemUiVisibility(
-                    View.SYSTEM_UI_FLAG_LAYOUT_STABLE
-                            | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN);
-        }
     }
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
         map = googleMap;
         map.setOnMarkerClickListener(this);
-        if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, REQUEST_TO_SETUP_MAP);
-            return;
-        }
         Log.i(TAG, "Map is ready");
         setupMap();
     }
@@ -114,13 +119,10 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         switch (requestCode) {
             case REQUEST_TO_SETUP_MAP:
-                if (grantResults[0] == PackageManager.PERMISSION_GRANTED)
-                    setupMap();
-                break;
-            case REQUEST_TO_REGISTER_LISTENER:
+                setupListeners();
                 if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    registerLocationUpdatesListener();
-                    updateMap();
+                    enableLocation = true;
+                    googleApiClient.connect();
                 }
                 break;
         }
@@ -128,7 +130,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
 
     @SuppressWarnings("MissingPermission")
     private void setupMap() {
-        map.setMyLocationEnabled(true);
+        if (enableLocation) map.setMyLocationEnabled(true);
         map.getUiSettings().setCompassEnabled(true);
         map.getUiSettings().setMyLocationButtonEnabled(false);
 
@@ -216,12 +218,9 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
 
     @Override
     public void onConnected(@Nullable Bundle bundle) {
-        if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-            registerLocationUpdatesListener();
-            updateMap();
-        } else {
-            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, REQUEST_TO_REGISTER_LISTENER);
-        }
+        registerLocationUpdatesListener();
+        updateMap();
+        Log.d(TAG, "Registered location updates listener");
     }
 
     @SuppressWarnings("MissingPermission")
