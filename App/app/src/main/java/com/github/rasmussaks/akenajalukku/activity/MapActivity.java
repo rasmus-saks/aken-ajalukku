@@ -10,6 +10,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
@@ -46,7 +47,6 @@ import com.google.android.gms.maps.model.Polyline;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 
 import java.util.ArrayList;
-import java.util.List;
 
 public class MapActivity extends AppCompatActivity implements OnMapReadyCallback,
         GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener,
@@ -59,10 +59,12 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     private GoogleApiClient googleApiClient;
     private Location lastLocation;
     private PointOfInterest currentPOI;
-    private List<PointOfInterest> pois = new ArrayList<>();
+    private ArrayList<PointOfInterest> pois = new ArrayList<>();
+    private ArrayList<PointOfInterest> pendingPois = new ArrayList<>();
     private Polyline currentPolyline;
     private SlidingUpPanelLayout drawerLayout;
     private boolean enableLocation = false;
+    private boolean openDrawer = false; //Open the drawer when the map is loaded?
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -73,7 +75,13 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         drawerLayout = (NoTouchSlidingUpPanelLayout) findViewById(R.id.sliding_layout);
         drawerLayout.addPanelSlideListener(this);
         drawerLayout.setPanelHeight(0);
-
+        if (savedInstanceState != null) {
+            unbundle(savedInstanceState);
+        }
+        Fragment drawerFragment = getSupportFragmentManager().findFragmentById(R.id.drawer_container);
+        if (drawerFragment != null) {
+            ((DrawerFragment) drawerFragment).setDrawerFragmentListener(this);
+        }
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             getWindow().getDecorView().setSystemUiVisibility(
                     View.SYSTEM_UI_FLAG_LAYOUT_STABLE
@@ -82,7 +90,16 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, REQUEST_TO_SETUP_MAP);
         } else {
+            enableLocation = true;
             setupListeners();
+        }
+    }
+
+    public void unbundle(Bundle bundle) {
+        pendingPois = bundle.getParcelableArrayList("pois");
+        int curIdx = bundle.getInt("currentPOI");
+        if (curIdx != -1) {
+            currentPOI = pendingPois.get(curIdx);
         }
     }
 
@@ -97,6 +114,14 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                     .addApi(LocationServices.API)
                     .build();
         }
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putInt("currentPOI", pois.indexOf(currentPOI));
+        outState.putParcelableArrayList("pois", pois);
+        outState.putBoolean("drawerExpanded", drawerLayout.getPanelState() == SlidingUpPanelLayout.PanelState.EXPANDED);
     }
 
     @Override
@@ -119,10 +144,12 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         switch (requestCode) {
             case REQUEST_TO_SETUP_MAP:
-                setupListeners();
                 if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     enableLocation = true;
+                    setupListeners();
                     googleApiClient.connect();
+                } else {
+                    setupListeners();
                 }
                 break;
         }
@@ -134,13 +161,26 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         map.setPadding(0, getResources().getDimensionPixelSize(R.dimen.mapview_top_padding), 0, 0);
         map.getUiSettings().setMyLocationButtonEnabled(false);
 
-        addPOI(new PointOfInterest(new LatLng(58.3824298, 26.7145573), "Baeri ja Jakobi ristmik", "Päris põnev", "http://i.imgur.com/FGCgIB7.jpg"));
-        addPOI(new PointOfInterest(new LatLng(58.380144, 26.7223035), "Raekoja plats", "Raekoda on cool", "http://i.imgur.com/ewugjb2.jpg"));
-        addPOI(new PointOfInterest(new LatLng(58.3740385, 26.7071558), "Tartu rongijaam", "Choo choo", "http://i.imgur.com/mRFDWKl.jpg"));
+        if (pendingPois.isEmpty()) {
+            addPOI(new PointOfInterest(new LatLng(58.3824298, 26.7145573), "Baeri ja Jakobi ristmik", "Päris põnev", "http://i.imgur.com/FGCgIB7.jpg"));
+            addPOI(new PointOfInterest(new LatLng(58.380144, 26.7223035), "Raekoja plats", "Raekoda on cool", "http://i.imgur.com/ewugjb2.jpg"));
+            addPOI(new PointOfInterest(new LatLng(58.3740385, 26.7071558), "Tartu rongijaam", "Choo choo", "http://i.imgur.com/mRFDWKl.jpg"));
+        } else {
+            for (PointOfInterest poi : pendingPois) {
+                addPOI(poi);
+            }
+        }
         map.setOnMapLoadedCallback(new GoogleMap.OnMapLoadedCallback() {
             @Override
             public void onMapLoaded() {
-                updateMap();
+                if (currentPOI == null) {
+                    updateMap();
+                } else {
+                    setFocusedPOI(currentPOI);
+                    if (openDrawer) {
+                        openPoiDetailDrawer(currentPOI);
+                    }
+                }
             }
         });
     }
@@ -289,15 +329,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         for (PointOfInterest poi : pois) {
             if (marker.equals(poi.getMarker())) {
                 if (currentPOI == poi) {
-                    POIDrawerFragment fragment = new POIDrawerFragment();
-                    Bundle bundle = new Bundle();
-                    bundle.putParcelable("poi", poi);
-                    fragment.setDrawerFragmentListener(this);
-                    fragment.setArguments(bundle);
-                    FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-                    transaction.replace(R.id.drawer_container, fragment);
-                    transaction.commit();
-                    drawerLayout.setPanelState(SlidingUpPanelLayout.PanelState.EXPANDED);
+                    openPoiDetailDrawer(poi);
                 } else {
                     setFocusedPOI(poi);
                 }
@@ -305,6 +337,18 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
             }
         }
         return false;
+    }
+
+    private void openPoiDetailDrawer(PointOfInterest poi) {
+        POIDrawerFragment fragment = new POIDrawerFragment();
+        Bundle bundle = new Bundle();
+        bundle.putParcelable("poi", poi);
+        fragment.setDrawerFragmentListener(this);
+        fragment.setArguments(bundle);
+        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+        transaction.replace(R.id.drawer_container, fragment);
+        transaction.commit();
+        drawerLayout.setPanelState(SlidingUpPanelLayout.PanelState.EXPANDED);
     }
 
 
