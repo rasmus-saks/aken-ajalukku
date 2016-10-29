@@ -24,10 +24,10 @@ import com.akexorcist.googledirection.model.Route;
 import com.akexorcist.googledirection.util.DirectionConverter;
 import com.github.rasmussaks.akenajalukku.R;
 import com.github.rasmussaks.akenajalukku.fragment.DrawerFragment;
+import com.github.rasmussaks.akenajalukku.fragment.JourneySelectionDrawerFragment;
 import com.github.rasmussaks.akenajalukku.fragment.POIDrawerFragment;
 import com.github.rasmussaks.akenajalukku.layout.NoTouchSlidingUpPanelLayout;
 import com.github.rasmussaks.akenajalukku.model.Data;
-import com.github.rasmussaks.akenajalukku.model.Journey;
 import com.github.rasmussaks.akenajalukku.model.PointOfInterest;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -67,6 +67,10 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     private boolean enableLocation = false;
     private boolean openDrawer = false; //Open the drawer when the map is loaded?
 
+    public Data getData() {
+        return data;
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -94,8 +98,8 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
             enableLocation = true;
             setupListeners();
         }
-        if (data==null) {
-            data=new Data();
+        if (data == null) {
+            data = new Data();
         }
     }
 
@@ -311,6 +315,11 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         openSettings();
     }
 
+    public void onJourneyButtonClick(View view) {
+        Log.i(TAG, data.getJourneys().toString());
+        openJourneySelectionDrawer();
+    }
+
     private void openSettings() {
         Intent intent = new Intent(this, SettingsActivity.class);
         startActivity(intent);
@@ -337,6 +346,15 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         bundle.putParcelable("poi", poi);
         fragment.setDrawerFragmentListener(this);
         fragment.setArguments(bundle);
+        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+        transaction.replace(R.id.drawer_container, fragment);
+        transaction.commit();
+        drawerLayout.setPanelState(SlidingUpPanelLayout.PanelState.EXPANDED);
+    }
+
+    private void openJourneySelectionDrawer() {
+        JourneySelectionDrawerFragment fragment = new JourneySelectionDrawerFragment();
+        fragment.setDrawerFragmentListener(this);
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
         transaction.replace(R.id.drawer_container, fragment);
         transaction.commit();
