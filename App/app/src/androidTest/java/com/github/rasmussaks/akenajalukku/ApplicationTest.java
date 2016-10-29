@@ -17,6 +17,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertTrue;
 import static org.hamcrest.core.IsNull.notNullValue;
 import static org.junit.Assert.assertEquals;
@@ -56,7 +57,7 @@ public class ApplicationTest {
         // Wait for launcher
         final String launcherPackage = device.getLauncherPackageName();
         assertThat(launcherPackage, notNullValue());
-        assertTrue(device.wait(Until.hasObject(By.pkg(launcherPackage).depth(0)), 30000));
+        assertTrue("Failed to find launcher", device.wait(Until.hasObject(By.pkg(launcherPackage).depth(0)), 30000));
         // Launch the app
         Context context = InstrumentationRegistry.getContext();
         final Intent intent = context.getPackageManager()
@@ -66,7 +67,9 @@ public class ApplicationTest {
         context.startActivity(intent);
         allowPermissionsIfNeeded();
         // Wait for the app to appear
-        assertTrue(device.wait(Until.hasObject(By.res(APP_PACKAGE, "map")), 30000));
+        assertFalse("Google Play services is out of date", device.wait(Until.hasObject(By.textContains("unless you update Google Play services")), 5000));
+
+        assertTrue("Failed to find map", device.wait(Until.hasObject(By.res(APP_PACKAGE, "map")), 30000));
     }
 
     @Test
