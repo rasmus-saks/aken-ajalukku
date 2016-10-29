@@ -52,8 +52,10 @@ android {
             applicationIdSuffix '.debug'
             if (System.getenv()["CI"]) {
                 resValue "string", "google_maps_key", System.getenv()["MAPS_API_KEY"]
+                logger.quiet("MAPS KEY IS: " + System.getenv()["MAPS_API_KEY"])
             } else {
                 resValue "string", "google_maps_key", 'AIzaSyB7hLpT4NB60q76zwqqE1USAve0fxHfJ-g'
+                logger.quiet("MAPS KEY IS: default")
             }
         }
     }
