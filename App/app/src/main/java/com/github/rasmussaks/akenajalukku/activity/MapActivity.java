@@ -26,6 +26,8 @@ import com.github.rasmussaks.akenajalukku.R;
 import com.github.rasmussaks.akenajalukku.fragment.DrawerFragment;
 import com.github.rasmussaks.akenajalukku.fragment.POIDrawerFragment;
 import com.github.rasmussaks.akenajalukku.layout.NoTouchSlidingUpPanelLayout;
+import com.github.rasmussaks.akenajalukku.model.Data;
+import com.github.rasmussaks.akenajalukku.model.Journey;
 import com.github.rasmussaks.akenajalukku.model.PointOfInterest;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -59,7 +61,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     private GoogleApiClient googleApiClient;
     private Location lastLocation;
     private PointOfInterest currentPOI;
-    private ArrayList<PointOfInterest> pois = new ArrayList<>();
+    private Data data;
     private Polyline currentPolyline;
     private SlidingUpPanelLayout drawerLayout;
     private boolean enableLocation = false;
@@ -92,18 +94,16 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
             enableLocation = true;
             setupListeners();
         }
-        if (pois.isEmpty()) {
-            pois.add(new PointOfInterest(new LatLng(58.3824298, 26.7145573), "Baeri ja Jakobi ristmik", "Päris põnev", "http://i.imgur.com/FGCgIB7.jpg"));
-            pois.add(new PointOfInterest(new LatLng(58.380144, 26.7223035), "Raekoja plats", "Raekoda on cool", "http://i.imgur.com/ewugjb2.jpg"));
-            pois.add(new PointOfInterest(new LatLng(58.3740385, 26.7071558), "Tartu rongijaam", "Choo choo", "http://i.imgur.com/mRFDWKl.jpg"));
+        if (data==null) {
+            data=new Data();
         }
     }
 
     public void unbundle(Bundle bundle) {
-        pois = bundle.getParcelableArrayList("pois");
+        data = bundle.getParcelable("data");
         int curIdx = bundle.getInt("currentPOI");
         if (curIdx != -1) {
-            currentPOI = pois.get(curIdx);
+            currentPOI = data.getPois().get(curIdx);
         }
     }
 
@@ -123,8 +123,8 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putInt("currentPOI", pois.indexOf(currentPOI));
-        outState.putParcelableArrayList("pois", pois);
+        outState.putParcelable("data", data);
+        outState.putInt("currentPOI", data.getPois().indexOf(currentPOI));
         outState.putBoolean("drawerExpanded", drawerLayout.getPanelState() == SlidingUpPanelLayout.PanelState.EXPANDED);
     }
 
@@ -164,7 +164,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         if (enableLocation) map.setMyLocationEnabled(true);
         map.setPadding(0, getResources().getDimensionPixelSize(R.dimen.mapview_top_padding), 0, 0);
         map.getUiSettings().setMyLocationButtonEnabled(false);
-        for (PointOfInterest poi : pois) {
+        for (PointOfInterest poi : data.getPois()) {
             poi.setMarker(map.addMarker(poi.getMarkerOptions()));
         }
         map.setOnMapLoadedCallback(new GoogleMap.OnMapLoadedCallback() {
@@ -190,7 +190,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         CameraUpdate update = null;
         if (map != null) {
             LatLngBounds.Builder bounds = LatLngBounds.builder();
-            for (PointOfInterest poi : pois) {
+            for (PointOfInterest poi : data.getPois()) {
                 bounds.include(poi.getLocation());
             }
             if (lastLocation != null) {
@@ -318,7 +318,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
 
     @Override
     public boolean onMarkerClick(Marker marker) {
-        for (PointOfInterest poi : pois) {
+        for (PointOfInterest poi : data.getPois()) {
             if (marker.equals(poi.getMarker())) {
                 if (currentPOI == poi) {
                     openPoiDetailDrawer(poi);
