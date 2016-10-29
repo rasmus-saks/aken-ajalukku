@@ -62,7 +62,7 @@
         android:footerDividersEnabled="false"
         android:divider="@null"
         android:dividerHeight="0dp"
-        android:paddingTop="5dp" />
+        android:paddingTop="7dp" />
 
 
 </LinearLayout>

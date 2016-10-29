@@ -40,7 +40,8 @@
                 android:layout_centerVertical="true"
                 android:gravity="center"
                 android:textColor="@color/title"
-                android:textSize="16sp" />
+                android:textSize="16sp"
+                android:textStyle="normal|bold" />
 
             <ImageButton
                 android:id="@+id/download_button"
@@ -69,7 +70,8 @@
         android:textAllCaps="false"
         android:textColor="@color/title"
         android:textSize="24sp"
-        android:textStyle="normal|bold" />
+        android:textStyle="normal|bold"
+        android:paddingTop="10dp" />
 
     <ImageView
         android:id="@+id/poi_img"
@@ -93,8 +95,10 @@
         android:id="@+id/poi_description"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:paddingLeft="10dp"
-        android:paddingRight="10dp"
+        android:paddingLeft="15dp"
+        android:paddingRight="15dp"
         android:text="TextView"
-        android:textColor="@color/title" />
+        android:textColor="@color/title"
+        android:textSize="18sp" />
+
 </LinearLayout>
