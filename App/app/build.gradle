@@ -45,12 +45,15 @@ android {
             if (project.hasProperty("RELEASE_STORE_FILE") || System.getenv()["CI"]) {
                 signingConfig signingConfigs.release
             }
+            resValue "string", "google_maps_key", 'AIzaSyB7hLpT4NB60q76zwqqE1USAve0fxHfJ-g'
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
         debug {
             applicationIdSuffix '.debug'
             if (System.getenv()["CI"]) {
                 resValue "string", "google_maps_key", System.getenv()["MAPS_API_KEY"]
+            } else {
+                resValue "string", "google_maps_key", 'AIzaSyB7hLpT4NB60q76zwqqE1USAve0fxHfJ-g'
             }
         }
     }
