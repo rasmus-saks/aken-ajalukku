@@ -8,8 +8,8 @@ import com.google.android.gms.location.GeofencingEvent;
 
 public class GeofenceTransitionsIntentService extends IntentService {
 
-    public GeofenceTransitionsIntentService(String name) {
-        super(name);
+    public GeofenceTransitionsIntentService() {
+        super("GeofenceTransitionsIntentService");
     }
 
     @Override
