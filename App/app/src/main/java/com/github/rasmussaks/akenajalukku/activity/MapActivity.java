@@ -60,7 +60,6 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     private Location lastLocation;
     private PointOfInterest currentPOI;
     private ArrayList<PointOfInterest> pois = new ArrayList<>();
-    private ArrayList<PointOfInterest> pendingPois = new ArrayList<>();
     private Polyline currentPolyline;
     private SlidingUpPanelLayout drawerLayout;
     private boolean enableLocation = false;
@@ -93,13 +92,18 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
             enableLocation = true;
             setupListeners();
         }
+        if (pois.isEmpty()) {
+            pois.add(new PointOfInterest(new LatLng(58.3824298, 26.7145573), "Baeri ja Jakobi ristmik", "Päris põnev", "http://i.imgur.com/FGCgIB7.jpg"));
+            pois.add(new PointOfInterest(new LatLng(58.380144, 26.7223035), "Raekoja plats", "Raekoda on cool", "http://i.imgur.com/ewugjb2.jpg"));
+            pois.add(new PointOfInterest(new LatLng(58.3740385, 26.7071558), "Tartu rongijaam", "Choo choo", "http://i.imgur.com/mRFDWKl.jpg"));
+        }
     }
 
     public void unbundle(Bundle bundle) {
-        pendingPois = bundle.getParcelableArrayList("pois");
+        pois = bundle.getParcelableArrayList("pois");
         int curIdx = bundle.getInt("currentPOI");
         if (curIdx != -1) {
-            currentPOI = pendingPois.get(curIdx);
+            currentPOI = pois.get(curIdx);
         }
     }
 
@@ -160,15 +164,8 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         if (enableLocation) map.setMyLocationEnabled(true);
         map.setPadding(0, getResources().getDimensionPixelSize(R.dimen.mapview_top_padding), 0, 0);
         map.getUiSettings().setMyLocationButtonEnabled(false);
-
-        if (pendingPois.isEmpty()) {
-            addPOI(new PointOfInterest(new LatLng(58.3824298, 26.7145573), "Baeri ja Jakobi ristmik", "Päris põnev", "http://i.imgur.com/FGCgIB7.jpg"));
-            addPOI(new PointOfInterest(new LatLng(58.380144, 26.7223035), "Raekoja plats", "Raekoda on cool", "http://i.imgur.com/ewugjb2.jpg"));
-            addPOI(new PointOfInterest(new LatLng(58.3740385, 26.7071558), "Tartu rongijaam", "Choo choo", "http://i.imgur.com/mRFDWKl.jpg"));
-        } else {
-            for (PointOfInterest poi : pendingPois) {
-                addPOI(poi);
-            }
+        for (PointOfInterest poi : pois) {
+            poi.setMarker(map.addMarker(poi.getMarkerOptions()));
         }
         map.setOnMapLoadedCallback(new GoogleMap.OnMapLoadedCallback() {
             @Override
@@ -209,11 +206,6 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                 map.moveCamera(update);
             }
         }
-    }
-
-    public void addPOI(PointOfInterest poi) {
-        pois.add(poi);
-        poi.setMarker(map.addMarker(poi.getMarkerOptions()));
     }
 
     public void setFocusedPOI(PointOfInterest poi) {
