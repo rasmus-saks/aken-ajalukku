@@ -2,11 +2,13 @@ package com.github.rasmussaks.akenajalukku.activity;
 
 import android.Manifest;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.location.Location;
 import android.os.Build;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
@@ -31,8 +33,6 @@ import com.github.rasmussaks.akenajalukku.model.PointOfInterest;
 import com.github.rasmussaks.akenajalukku.util.Constants;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.common.api.PendingResult;
-import com.google.android.gms.common.api.Status;
 import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
@@ -96,7 +96,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, REQUEST_TO_SETUP_MAP);
         } else {
             enableLocation = true;
-            setupListeners();
+            loadMap();
         }
         geofenceManager = new GeofenceManager(this);
     }
@@ -109,17 +109,10 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         }
     }
 
-    private void setupListeners() {
+    private void loadMap() {
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
-        if (googleApiClient == null) {
-            googleApiClient = new GoogleApiClient.Builder(this)
-                    .addConnectionCallbacks(this)
-                    .addOnConnectionFailedListener(this)
-                    .addApi(LocationServices.API)
-                    .build();
-        }
     }
 
     @Override
@@ -160,11 +153,8 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
             case REQUEST_TO_SETUP_MAP:
                 if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     enableLocation = true;
-                    setupListeners();
-                    googleApiClient.connect();
-                } else {
-                    setupListeners();
                 }
+                loadMap();
                 break;
         }
     }
@@ -183,6 +173,15 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
             for (PointOfInterest poi : pendingPois) {
                 addPOI(poi);
             }
+        }
+        //If location is enabled, start the Google API client
+        if (googleApiClient == null && enableLocation) {
+            googleApiClient = new GoogleApiClient.Builder(this)
+                    .addConnectionCallbacks(this)
+                    .addOnConnectionFailedListener(this)
+                    .addApi(LocationServices.API)
+                    .build();
+            googleApiClient.connect();
         }
         map.setOnMapLoadedCallback(new GoogleMap.OnMapLoadedCallback() {
             @Override
@@ -272,14 +271,19 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
 
     @Override
     public void onConnected(@Nullable Bundle bundle) {
-        registerLocationUpdatesListener();
+        setupGoogleApiClient();
         updateMap();
         Log.d(TAG, "Registered location updates listener");
     }
 
     @SuppressWarnings("MissingPermission")
-    private PendingResult<Status> registerLocationUpdatesListener() {
-        return LocationServices.FusedLocationApi.requestLocationUpdates(googleApiClient, createLocationRequest(), this);
+    private void setupGoogleApiClient() {
+        LocationServices.FusedLocationApi.requestLocationUpdates(googleApiClient, createLocationRequest(), this);
+        SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(this);
+        pref.registerOnSharedPreferenceChangeListener(new SharedPreferenceChangeListener());
+        if (pref.getBoolean("pref_notifications", true)) {
+            geofenceManager.addGeofences();
+        }
     }
 
     protected LocationRequest createLocationRequest() {
@@ -385,5 +389,18 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     @Override
     public void onCloseDrawer() {
         drawerLayout.setPanelState(SlidingUpPanelLayout.PanelState.HIDDEN);
+    }
+
+    private class SharedPreferenceChangeListener implements SharedPreferences.OnSharedPreferenceChangeListener {
+        @Override
+        public void onSharedPreferenceChanged(SharedPreferences pref, String key) {
+            if (key.equals("pref_notifications")) {
+                if (pref.getBoolean("pref_notifications", true)) {
+                    geofenceManager.addGeofences();
+                } else {
+                    geofenceManager.removeGeofences();
+                }
+            }
+        }
     }
 }
