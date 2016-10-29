@@ -26,7 +26,6 @@
         android:textStyle="normal|bold"
         android:textColor="@color/whiteText"
         android:id="@+id/journeyTitle"
-        android:layout_alignTop="@+id/view"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
         android:layout_marginLeft="14dp"
