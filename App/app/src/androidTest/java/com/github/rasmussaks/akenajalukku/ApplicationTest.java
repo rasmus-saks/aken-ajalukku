@@ -17,7 +17,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import static android.support.test.InstrumentationRegistry.getInstrumentation;
+import static junit.framework.Assert.assertTrue;
 import static org.hamcrest.core.IsNull.notNullValue;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
@@ -27,13 +27,12 @@ import static org.junit.Assert.assertThat;
  */
 @RunWith(AndroidJUnit4.class)
 public class ApplicationTest {
-    private static final String BASIC_SAMPLE_PACKAGE
-            = "com.github.rasmussaks.akenajalukku.debug";
-    UiDevice mDevice;
+    private static final String APP_PACKAGE = "com.github.rasmussaks.akenajalukku.debug";
+    private UiDevice device;
 
-    private static void allowPermissionsIfNeeded() {
+    private void allowPermissionsIfNeeded() {
         if (Build.VERSION.SDK_INT >= 23) {
-            UiDevice device = UiDevice.getInstance(getInstrumentation());
+            device.wait(Until.hasObject(By.text("Allow")), 10000);
             UiObject allowPermissions = device.findObject(new UiSelector().text("Allow"));
             if (allowPermissions.exists()) {
                 try {
@@ -49,33 +48,30 @@ public class ApplicationTest {
     public void startMainActivityFromHomeScreen() {
 
         // Initialize UiDevice instance
-        mDevice = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation());
+        device = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation());
 
         // Start from the home screen
-        mDevice.pressHome();
+        device.pressHome();
 
         // Wait for launcher
-        final String launcherPackage = mDevice.getLauncherPackageName();
+        final String launcherPackage = device.getLauncherPackageName();
         assertThat(launcherPackage, notNullValue());
-        mDevice.wait(Until.hasObject(By.pkg(launcherPackage).depth(0)), 5000);
-
+        assertTrue(device.wait(Until.hasObject(By.pkg(launcherPackage).depth(0)), 30000));
         // Launch the app
         Context context = InstrumentationRegistry.getContext();
         final Intent intent = context.getPackageManager()
-                .getLaunchIntentForPackage(BASIC_SAMPLE_PACKAGE);
+                .getLaunchIntentForPackage(APP_PACKAGE);
         // Clear out any previous instances
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
         context.startActivity(intent);
-
-        // Wait for the app to appear
-        mDevice.wait(Until.hasObject(By.pkg(BASIC_SAMPLE_PACKAGE).depth(0)),
-                5000);
         allowPermissionsIfNeeded();
+        // Wait for the app to appear
+        assertTrue(device.wait(Until.hasObject(By.res(APP_PACKAGE, "map")), 30000));
     }
 
     @Test
     public void testMarker() throws Exception {
-        UiObject marker = mDevice.findObject(new UiSelector().descriptionContains("Raekoja plats"));
+        UiObject marker = device.findObject(new UiSelector().descriptionContains("Raekoja plats"));
         marker.click();
         assertEquals("Testing test : ", 2 + 2, 4);
     }
