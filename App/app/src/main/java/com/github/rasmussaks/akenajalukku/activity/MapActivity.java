@@ -52,13 +52,14 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import static com.github.rasmussaks.akenajalukku.util.Constants.TAG;
+
 public class MapActivity extends AppCompatActivity implements OnMapReadyCallback,
         GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener,
         DirectionCallback, GoogleMap.OnMarkerClickListener, SlidingUpPanelLayout.PanelSlideListener,
         LocationListener, DrawerFragment.DrawerFragmentListener {
 
     private static final int REQUEST_TO_SETUP_MAP = 1;
-    private static String TAG = "aken-ajalukku";
     private GoogleMap map;
     private GoogleApiClient googleApiClient;
     private Location lastLocation;
