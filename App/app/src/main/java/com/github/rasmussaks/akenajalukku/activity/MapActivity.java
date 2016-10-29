@@ -26,7 +26,9 @@ import com.github.rasmussaks.akenajalukku.R;
 import com.github.rasmussaks.akenajalukku.fragment.DrawerFragment;
 import com.github.rasmussaks.akenajalukku.fragment.POIDrawerFragment;
 import com.github.rasmussaks.akenajalukku.layout.NoTouchSlidingUpPanelLayout;
+import com.github.rasmussaks.akenajalukku.manager.GeofenceManager;
 import com.github.rasmussaks.akenajalukku.model.PointOfInterest;
+import com.github.rasmussaks.akenajalukku.util.Constants;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.PendingResult;
@@ -47,6 +49,8 @@ import com.google.android.gms.maps.model.Polyline;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 public class MapActivity extends AppCompatActivity implements OnMapReadyCallback,
         GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener,
@@ -65,6 +69,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     private SlidingUpPanelLayout drawerLayout;
     private boolean enableLocation = false;
     private boolean openDrawer = false; //Open the drawer when the map is loaded?
+    private GeofenceManager geofenceManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -93,6 +98,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
             enableLocation = true;
             setupListeners();
         }
+        geofenceManager = new GeofenceManager(this);
     }
 
     public void unbundle(Bundle bundle) {
@@ -132,6 +138,14 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         setupMap();
     }
 
+    public List<PointOfInterest> getPois() {
+        return Collections.unmodifiableList(pois);
+    }
+
+    public GoogleApiClient getGoogleApiClient() {
+        return googleApiClient;
+    }
+
     @Override
     protected void onStart() {
         super.onStart();
@@ -162,9 +176,9 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         map.getUiSettings().setMyLocationButtonEnabled(false);
 
         if (pendingPois.isEmpty()) {
-            addPOI(new PointOfInterest(new LatLng(58.3824298, 26.7145573), "Baeri ja Jakobi ristmik", "Päris põnev", "http://i.imgur.com/FGCgIB7.jpg"));
-            addPOI(new PointOfInterest(new LatLng(58.380144, 26.7223035), "Raekoja plats", "Raekoda on cool", "http://i.imgur.com/ewugjb2.jpg"));
-            addPOI(new PointOfInterest(new LatLng(58.3740385, 26.7071558), "Tartu rongijaam", "Choo choo", "http://i.imgur.com/mRFDWKl.jpg"));
+            for (PointOfInterest poi : Constants.TESTING_POIS) {
+                addPOI(poi);
+            }
         } else {
             for (PointOfInterest poi : pendingPois) {
                 addPOI(poi);

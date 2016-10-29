@@ -39,6 +39,10 @@
             </intent-filter>
         </activity>
         <activity android:name=".activity.SettingsActivity" />
+
+        <service
+            android:name=".service.GeofenceTransitionsIntentService"
+            android:exported="false"></service>
     </application>
 
 </manifest>
