@@ -49,6 +49,9 @@ android {
         }
         debug {
             applicationIdSuffix '.debug'
+            if (System.getenv()["CI"]) {
+                resValue "string", "google_maps_key", System.getenv()["MAPS_API_KEY"]
+            }
         }
     }
 }
