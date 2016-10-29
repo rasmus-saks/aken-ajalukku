@@ -165,15 +165,12 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         map.setPadding(0, getResources().getDimensionPixelSize(R.dimen.mapview_top_padding), 0, 0);
         map.getUiSettings().setMyLocationButtonEnabled(false);
 
-        if (pendingPois.isEmpty()) {
-            for (PointOfInterest poi : Constants.TESTING_POIS) {
-                addPOI(poi);
-            }
-        } else {
-            for (PointOfInterest poi : pendingPois) {
-                addPOI(poi);
-            }
+        //If there are PoIs pending from an unbundle, load those, otherwise load the testing PoIs
+        List<PointOfInterest> pois = !pendingPois.isEmpty() ? pendingPois : Constants.TESTING_POIS;
+        for (PointOfInterest poi : pois) {
+            addPOI(poi);
         }
+
         //If location is enabled, start the Google API client
         if (googleApiClient == null && enableLocation) {
             googleApiClient = new GoogleApiClient.Builder(this)
