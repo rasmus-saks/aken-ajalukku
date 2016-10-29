@@ -54,6 +54,7 @@ public class GeofenceManager extends BaseManager implements ResultCallback<Statu
 
     @SuppressWarnings("MissingPermission")
     public void addGeofences() {
+        populateGeofencesList();
         LocationServices.GeofencingApi.addGeofences(
                 getContext().getGoogleApiClient(),
                 getGeofencingRequest(),
