@@ -84,7 +84,7 @@ public class ApplicationTest {
         UiObject marker = device.findObject(new UiSelector().descriptionContains("Raekoja plats"));
         marker.click();
         marker.click();
-        assertTrue("Failed to find the marker detailed view", device.wait(Until.hasObject(By.text("THE STORY")), 10000));
+        assertTrue("Failed to find the marker detailed view", device.wait(Until.hasObject(By.res(APP_PACKAGE, "the_story")), 10000));
     }
 
     @Test
