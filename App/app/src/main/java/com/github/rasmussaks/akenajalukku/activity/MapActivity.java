@@ -215,6 +215,13 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     public void setFocusedPOI(PointOfInterest poi) {
         resetPoiMarker(currentPOI);
         currentPOI = poi;
+        if (currentPOI == null) {
+            if (currentPolyline != null) {
+                currentPolyline.remove();
+            }
+            resetCamera(true);
+            return;
+        }
         if (lastLocation != null) {
             GoogleDirection
                     .withServerKey(null)
@@ -223,7 +230,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                     .transportMode("walking")
                     .execute(this);
         } else { //No location available at the moment, just focus the marker
-            if (currentPOI != null && currentPOI.getMarker() != null) {
+            if (currentPOI.getMarker() != null) {
                 currentPOI.getMarker().remove();
                 currentPOI.setMarker(null);
             }
@@ -381,5 +388,16 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     @Override
     public void onCloseDrawer() {
         drawerLayout.setPanelState(SlidingUpPanelLayout.PanelState.HIDDEN);
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (drawerLayout.getPanelState() == SlidingUpPanelLayout.PanelState.EXPANDED) {
+            onCloseDrawer();
+        } else if (currentPOI != null) {
+            setFocusedPOI(null);
+        } else {
+            finish();
+        }
     }
 }
