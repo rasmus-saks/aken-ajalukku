@@ -39,6 +39,7 @@ public class GeofenceTransitionsReceiver extends BroadcastReceiver {
     }
 
     private void createNotification(Context context, ArrayList<PointOfInterest> pois) {
+        if (MapActivity.isVisible()) return;
         NotificationCompat.Builder builder = new NotificationCompat.Builder(context);
 
         String title;

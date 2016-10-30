@@ -1,6 +1,8 @@
 package com.github.rasmussaks.akenajalukku.activity;
 
 import android.Manifest;
+import android.app.NotificationManager;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
@@ -32,6 +34,7 @@ import com.github.rasmussaks.akenajalukku.layout.NoTouchSlidingUpPanelLayout;
 import com.github.rasmussaks.akenajalukku.manager.GeofenceManager;
 import com.github.rasmussaks.akenajalukku.model.Data;
 import com.github.rasmussaks.akenajalukku.model.PointOfInterest;
+import com.github.rasmussaks.akenajalukku.util.Constants;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationListener;
@@ -59,8 +62,8 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener,
         DirectionCallback, GoogleMap.OnMarkerClickListener, SlidingUpPanelLayout.PanelSlideListener,
         LocationListener, DrawerFragment.DrawerFragmentListener {
-
     private static final int REQUEST_TO_SETUP_MAP = 1;
+    private static boolean visible;
     private GoogleMap map;
     private GoogleApiClient googleApiClient;
     private Location lastLocation;
@@ -72,6 +75,10 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     private GeofenceManager geofenceManager;
     private ArrayList<PointOfInterest> intentPois;
     private SharedPreferenceChangeListener preferenceChangeListener = new SharedPreferenceChangeListener();
+
+    public static boolean isVisible() {
+        return visible;
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -104,8 +111,25 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
             enableLocation = true;
             loadMap();
         }
+        NotificationManager notifMgr =
+                (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        notifMgr.cancel(Constants.NOTIFICATION_ID);
         geofenceManager = new GeofenceManager(this);
 
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        visible = true;
+        Log.d(TAG, "Resumed");
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        visible = false;
+        Log.d(TAG, "Paused");
     }
 
     public void unbundle(Bundle bundle) {

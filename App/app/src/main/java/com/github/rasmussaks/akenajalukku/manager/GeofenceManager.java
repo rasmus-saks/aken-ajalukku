@@ -29,6 +29,7 @@ public class GeofenceManager extends BaseManager implements ResultCallback<Statu
     private final SharedPreferences sharedPreferences;
     private boolean geofencesAdded;
     private List<Geofence> geofences = new ArrayList<>();
+    private PendingIntent pendingIntent;
 
     public GeofenceManager(MapActivity context) {
         super(context);
@@ -104,8 +105,10 @@ public class GeofenceManager extends BaseManager implements ResultCallback<Statu
     }
 
     private PendingIntent getPendingIntent() {
+        if (pendingIntent != null) return pendingIntent;
         Intent intent = new Intent("com.aol.android.geofence.ACTION_RECEIVE_GEOFENCE");
-        return PendingIntent.getBroadcast(getContext(), 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+        pendingIntent = PendingIntent.getBroadcast(getContext(), 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+        return pendingIntent;
     }
 
     private GeofencingRequest getGeofencingRequest() {
