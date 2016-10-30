@@ -1,8 +1,8 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 24
-    buildToolsVersion "24.0.2"
+    compileSdkVersion 25
+    buildToolsVersion "24.0.3"
 
     defaultConfig {
         applicationId "com.github.rasmussaks.akenajalukku"
@@ -45,25 +45,36 @@ android {
             if (project.hasProperty("RELEASE_STORE_FILE") || System.getenv()["CI"]) {
                 signingConfig signingConfigs.release
             }
+            resValue "string", "google_maps_key", 'AIzaSyB7hLpT4NB60q76zwqqE1USAve0fxHfJ-g'
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+        debug {
+            applicationIdSuffix '.debug'
+            if (System.getenv()["CI"]) {
+                resValue "string", "google_maps_key", System.getenv()["MAPS_API_KEY"]
+                logger.quiet("MAPS KEY IS: " + System.getenv()["MAPS_API_KEY"])
+            } else {
+                resValue "string", "google_maps_key", 'AIzaSyB7hLpT4NB60q76zwqqE1USAve0fxHfJ-g'
+                logger.quiet("MAPS KEY IS: default")
+            }
         }
     }
 }
 
 dependencies {
-    compile fileTree(dir: 'libs', include: ['*.jar'])
-    compile 'com.android.support:appcompat-v7:24.2.0'
-    compile 'com.google.android.gms:play-services-maps:9.6.1'
-    compile 'com.google.android.gms:play-services-location:9.6.1'
+    compile fileTree(include: ['*.jar'], dir: 'libs')
+    compile 'com.android.support:appcompat-v7:25.0.0'
+    compile 'com.google.android.gms:play-services-maps:9.0.0'
+    compile 'com.google.android.gms:play-services-location:9.0.0'
     compile 'com.akexorcist:googledirectionlibrary:1.0.4'
-    compile 'com.android.support:support-v4:24.2.0'
-    compile 'com.android.support:support-vector-drawable:24.2.0'
-    compile 'com.android.support:design:24.2.0'
+    compile 'com.android.support:support-v4:25.0.0'
+    compile 'com.android.support:support-vector-drawable:25.0.0'
+    compile 'com.android.support:design:25.0.0'
     compile 'com.github.bumptech.glide:glide:3.7.0'
     compile 'com.android.support:multidex:1.0.1'
     compile 'com.sothree.slidinguppanel:library:3.3.1'
     testCompile 'junit:junit:4.12'
-    androidTestCompile 'com.android.support:support-annotations:24.2.0'
+    androidTestCompile 'com.android.support:support-annotations:25.0.0'
     androidTestCompile 'com.android.support.test:runner:0.5'
     androidTestCompile 'com.android.support.test:rules:0.5'
     androidTestCompile 'com.android.support.test.uiautomator:uiautomator-v18:2.1.2'

@@ -38,6 +38,15 @@
             android:background="@android:color/transparent"
             android:onClick="onSettingsButtonClick"
             android:src="@drawable/ic_settings_black_36dp" />
+
+        <ImageButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            sothree:srcCompat="?android:attr/listChoiceIndicatorSingle"
+            android:id="@+id/journey_button"
+            android:onClick="onJourneyButtonClick"
+            android:layout_alignParentBottom="true"
+            android:layout_centerHorizontal="true" />
     </RelativeLayout>
 
     <LinearLayout

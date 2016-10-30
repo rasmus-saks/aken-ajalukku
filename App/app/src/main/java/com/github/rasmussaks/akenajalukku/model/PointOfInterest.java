@@ -19,13 +19,15 @@ public class PointOfInterest implements Parcelable {
             return new PointOfInterest[size];
         }
     };
+    private int id;
     private LatLng location;
     private String title;
     private String description;
     private Marker marker;
     private String imageUrl;
 
-    public PointOfInterest(LatLng location, String title, String description, String imageUrl) {
+    public PointOfInterest(int id,LatLng location, String title, String description, String imageUrl) {
+        this.id=id;
         this.location = location;
         this.title = title;
         this.description = description;
@@ -33,10 +35,19 @@ public class PointOfInterest implements Parcelable {
     }
 
     private PointOfInterest(Parcel in) {
+        id = in.readInt();
         location = in.readParcelable(LatLng.class.getClassLoader());
         title = in.readString();
         description = in.readString();
         imageUrl = in.readString();
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 
     public LatLng getLocation() {
@@ -74,6 +85,7 @@ public class PointOfInterest implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
+        dest.writeInt(id);
         dest.writeParcelable(location, flags);
         dest.writeString(title);
         dest.writeString(description);

@@ -26,11 +26,12 @@ import com.akexorcist.googledirection.model.Route;
 import com.akexorcist.googledirection.util.DirectionConverter;
 import com.github.rasmussaks.akenajalukku.R;
 import com.github.rasmussaks.akenajalukku.fragment.DrawerFragment;
+import com.github.rasmussaks.akenajalukku.fragment.JourneySelectionDrawerFragment;
 import com.github.rasmussaks.akenajalukku.fragment.POIDrawerFragment;
 import com.github.rasmussaks.akenajalukku.layout.NoTouchSlidingUpPanelLayout;
 import com.github.rasmussaks.akenajalukku.manager.GeofenceManager;
+import com.github.rasmussaks.akenajalukku.model.Data;
 import com.github.rasmussaks.akenajalukku.model.PointOfInterest;
-import com.github.rasmussaks.akenajalukku.util.Constants;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationListener;
@@ -64,13 +65,16 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     private GoogleApiClient googleApiClient;
     private Location lastLocation;
     private PointOfInterest currentPOI;
-    private ArrayList<PointOfInterest> pois = new ArrayList<>();
-    private ArrayList<PointOfInterest> pendingPois = new ArrayList<>();
+    private Data data;
     private Polyline currentPolyline;
     private SlidingUpPanelLayout drawerLayout;
     private boolean enableLocation = false;
     private boolean openDrawer = false; //Open the drawer when the map is loaded?
     private GeofenceManager geofenceManager;
+
+    public Data getData() {
+        return data;
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -100,13 +104,16 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
             loadMap();
         }
         geofenceManager = new GeofenceManager(this);
+        if (data == null) {
+            data = new Data();
+        }
     }
 
     public void unbundle(Bundle bundle) {
-        pendingPois = bundle.getParcelableArrayList("pois");
+        data = bundle.getParcelable("data");
         int curIdx = bundle.getInt("currentPOI");
         if (curIdx != -1) {
-            currentPOI = pendingPois.get(curIdx);
+            currentPOI = data.getPois().get(curIdx);
         }
     }
 
@@ -119,8 +126,8 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putInt("currentPOI", pois.indexOf(currentPOI));
-        outState.putParcelableArrayList("pois", pois);
+        outState.putParcelable("data", data);
+        outState.putInt("currentPOI", data.getPois().indexOf(currentPOI));
         outState.putBoolean("drawerExpanded", drawerLayout.getPanelState() == SlidingUpPanelLayout.PanelState.EXPANDED);
     }
 
@@ -133,7 +140,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     }
 
     public List<PointOfInterest> getPois() {
-        return Collections.unmodifiableList(pois);
+        return Collections.unmodifiableList(data.getPois());
     }
 
     public GoogleApiClient getGoogleApiClient() {
@@ -165,13 +172,9 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         if (enableLocation) map.setMyLocationEnabled(true);
         map.setPadding(0, getResources().getDimensionPixelSize(R.dimen.mapview_top_padding), 0, 0);
         map.getUiSettings().setMyLocationButtonEnabled(false);
-
-        //If there are PoIs pending from an unbundle, load those, otherwise load the testing PoIs
-        List<PointOfInterest> pois = !pendingPois.isEmpty() ? pendingPois : Constants.TESTING_POIS;
-        for (PointOfInterest poi : pois) {
-            addPOI(poi);
+        for (PointOfInterest poi : data.getPois()) {
+            poi.setMarker(map.addMarker(poi.getMarkerOptions()));
         }
-
         //If location is enabled, start the Google API client
         if (googleApiClient == null && enableLocation) {
             googleApiClient = new GoogleApiClient.Builder(this)
@@ -204,7 +207,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         CameraUpdate update = null;
         if (map != null) {
             LatLngBounds.Builder bounds = LatLngBounds.builder();
-            for (PointOfInterest poi : pois) {
+            for (PointOfInterest poi : data.getPois()) {
                 bounds.include(poi.getLocation());
             }
             if (lastLocation != null) {
@@ -222,14 +225,16 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         }
     }
 
-    public void addPOI(PointOfInterest poi) {
-        pois.add(poi);
-        poi.setMarker(map.addMarker(poi.getMarkerOptions()));
-    }
-
     public void setFocusedPOI(PointOfInterest poi) {
         resetPoiMarker(currentPOI);
         currentPOI = poi;
+        if (currentPOI == null) {
+            if (currentPolyline != null) {
+                currentPolyline.remove();
+            }
+            resetCamera(true);
+            return;
+        }
         if (lastLocation != null) {
             GoogleDirection
                     .withServerKey(null)
@@ -238,7 +243,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                     .transportMode("walking")
                     .execute(this);
         } else { //No location available at the moment, just focus the marker
-            if (currentPOI != null && currentPOI.getMarker() != null) {
+            if (currentPOI.getMarker() != null) {
                 currentPOI.getMarker().remove();
                 currentPOI.setMarker(null);
             }
@@ -335,6 +340,11 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         openSettings();
     }
 
+    public void onJourneyButtonClick(View view) {
+        Log.i(TAG, data.getJourneys().toString());
+        openJourneySelectionDrawer();
+    }
+
     private void openSettings() {
         Intent intent = new Intent(this, SettingsActivity.class);
         startActivity(intent);
@@ -342,7 +352,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
 
     @Override
     public boolean onMarkerClick(Marker marker) {
-        for (PointOfInterest poi : pois) {
+        for (PointOfInterest poi : data.getPois()) {
             if (marker.equals(poi.getMarker())) {
                 if (currentPOI == poi) {
                     openPoiDetailDrawer(poi);
@@ -361,6 +371,15 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         bundle.putParcelable("poi", poi);
         fragment.setDrawerFragmentListener(this);
         fragment.setArguments(bundle);
+        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+        transaction.replace(R.id.drawer_container, fragment);
+        transaction.commit();
+        drawerLayout.setPanelState(SlidingUpPanelLayout.PanelState.EXPANDED);
+    }
+
+    private void openJourneySelectionDrawer() {
+        JourneySelectionDrawerFragment fragment = new JourneySelectionDrawerFragment();
+        fragment.setDrawerFragmentListener(this);
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
         transaction.replace(R.id.drawer_container, fragment);
         transaction.commit();
@@ -387,6 +406,18 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     @Override
     public void onCloseDrawer() {
         drawerLayout.setPanelState(SlidingUpPanelLayout.PanelState.HIDDEN);
+    }
+
+
+    @Override
+    public void onBackPressed() {
+        if (drawerLayout.getPanelState() == SlidingUpPanelLayout.PanelState.EXPANDED) {
+            onCloseDrawer();
+        } else if (currentPOI != null) {
+            setFocusedPOI(null);
+        } else {
+            finish();
+        }
     }
 
     private class SharedPreferenceChangeListener implements SharedPreferences.OnSharedPreferenceChangeListener {
