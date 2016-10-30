@@ -82,7 +82,7 @@ public class GeofenceManager extends BaseManager implements ResultCallback<Statu
     public void removeGeofences() {
         final List<String> fences = new ArrayList<>();
         for (PointOfInterest poi : getContext().getPois()) {
-            fences.add(poi.getTitle());
+            fences.add(String.valueOf(poi.getId()));
         }
         LocationServices.GeofencingApi.removeGeofences(
                 getContext().getGoogleApiClient(),
@@ -95,7 +95,7 @@ public class GeofenceManager extends BaseManager implements ResultCallback<Statu
                     SharedPreferences.Editor editor = sharedPreferences.edit();
                     editor.putBoolean(GEOFENCES_ADDED_KEY, geofencesAdded);
                     editor.apply();
-                    Log.i(TAG, "Removed " + fences.size() + "geofence(s)");
+                    Log.i(TAG, "Removed " + fences.size() + " geofence(s)");
                 } else {
                     Log.e(TAG, "Failed to remove geofences: " + status.getStatusCode());
                 }

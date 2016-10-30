@@ -71,6 +71,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     private boolean openDrawer = false; //Open the drawer when the map is loaded?
     private GeofenceManager geofenceManager;
     private ArrayList<PointOfInterest> intentPois;
+    private SharedPreferenceChangeListener preferenceChangeListener = new SharedPreferenceChangeListener();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -293,7 +294,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         LocationServices.FusedLocationApi.requestLocationUpdates(googleApiClient, createLocationRequest(), this);
         lastLocation = LocationServices.FusedLocationApi.getLastLocation(googleApiClient);
         SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(this);
-        pref.registerOnSharedPreferenceChangeListener(new SharedPreferenceChangeListener());
+        pref.registerOnSharedPreferenceChangeListener(preferenceChangeListener);
         if (pref.getBoolean("pref_notifications", true)) {
             geofenceManager.addGeofences();
         }
