@@ -13,4 +13,7 @@
     <string name="language">Language</string>
     <string name="the_story">The story</string>
     <string name="download_text">Downloading %1$d</string>
+    <string name="notification_poi_nearby">%s is nearby!</string>
+    <string name="notification_pois_nearby">%d points of interest nearby!</string>
+    <string name="notification_detail">Tap to find out more</string>
 </resources>

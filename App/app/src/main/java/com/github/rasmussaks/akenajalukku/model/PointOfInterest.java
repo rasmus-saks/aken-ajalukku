@@ -91,4 +91,20 @@ public class PointOfInterest implements Parcelable {
         dest.writeString(description);
         dest.writeString(imageUrl);
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        PointOfInterest that = (PointOfInterest) o;
+
+        return id == that.id;
+
+    }
+
+    @Override
+    public int hashCode() {
+        return id;
+    }
 }

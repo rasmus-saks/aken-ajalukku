@@ -12,9 +12,6 @@ import com.github.rasmussaks.akenajalukku.model.Journey;
 
 import java.util.ArrayList;
 
-/**
- * Created by AlWilliam on 10/28/2016.
- */
 
 public class JourneyAdapter extends BaseAdapter {
     private ArrayList<Journey> journeys;

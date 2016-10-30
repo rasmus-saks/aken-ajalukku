@@ -40,9 +40,13 @@
         </activity>
         <activity android:name=".activity.SettingsActivity" />
 
-        <service
-            android:name=".service.GeofenceTransitionsIntentService"
-            android:exported="true" />
+        <receiver
+            android:name=".receiver.GeofenceTransitionsReceiver"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="com.aol.android.geofence.ACTION_RECEIVE_GEOFENCE" />
+            </intent-filter>
+        </receiver>
     </application>
 
 </manifest>

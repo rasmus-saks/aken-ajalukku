@@ -65,16 +65,12 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     private GoogleApiClient googleApiClient;
     private Location lastLocation;
     private PointOfInterest currentPOI;
-    private Data data;
     private Polyline currentPolyline;
     private SlidingUpPanelLayout drawerLayout;
     private boolean enableLocation = false;
     private boolean openDrawer = false; //Open the drawer when the map is loaded?
     private GeofenceManager geofenceManager;
-
-    public Data getData() {
-        return data;
-    }
+    private ArrayList<PointOfInterest> intentPois;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -87,6 +83,10 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         drawerLayout.setPanelHeight(0);
         if (savedInstanceState != null) {
             unbundle(savedInstanceState);
+        }
+        Intent intent = getIntent();
+        if (intent != null && intent.hasExtra("pois")) {
+            intentPois = intent.getParcelableArrayListExtra("pois");
         }
         Fragment drawerFragment = getSupportFragmentManager().findFragmentById(R.id.drawer_container);
         if (drawerFragment != null) {
@@ -104,16 +104,14 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
             loadMap();
         }
         geofenceManager = new GeofenceManager(this);
-        if (data == null) {
-            data = new Data();
-        }
+
     }
 
     public void unbundle(Bundle bundle) {
-        data = bundle.getParcelable("data");
+        Data.instance = bundle.getParcelable("data");
         int curIdx = bundle.getInt("currentPOI");
         if (curIdx != -1) {
-            currentPOI = data.getPois().get(curIdx);
+            currentPOI = Data.instance.getPois().get(curIdx);
         }
     }
 
@@ -126,8 +124,8 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putParcelable("data", data);
-        outState.putInt("currentPOI", data.getPois().indexOf(currentPOI));
+        outState.putParcelable("data", Data.instance);
+        outState.putInt("currentPOI", Data.instance.getPois().indexOf(currentPOI));
         outState.putBoolean("drawerExpanded", drawerLayout.getPanelState() == SlidingUpPanelLayout.PanelState.EXPANDED);
     }
 
@@ -140,7 +138,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     }
 
     public List<PointOfInterest> getPois() {
-        return Collections.unmodifiableList(data.getPois());
+        return Collections.unmodifiableList(Data.instance.getPois());
     }
 
     public GoogleApiClient getGoogleApiClient() {
@@ -172,8 +170,8 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         if (enableLocation) map.setMyLocationEnabled(true);
         map.setPadding(0, getResources().getDimensionPixelSize(R.dimen.mapview_top_padding), 0, 0);
         map.getUiSettings().setMyLocationButtonEnabled(false);
-        for (PointOfInterest poi : data.getPois()) {
-            poi.setMarker(map.addMarker(poi.getMarkerOptions()));
+        for (PointOfInterest poi : Data.instance.getPois()) {
+            resetPoiMarker(poi);
         }
         //If location is enabled, start the Google API client
         if (googleApiClient == null && enableLocation) {
@@ -188,7 +186,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
             @Override
             public void onMapLoaded() {
                 if (currentPOI == null) {
-                    updateMap();
+                    if (!enableLocation) updateMap();
                 } else {
                     setFocusedPOI(currentPOI);
                     if (openDrawer) {
@@ -203,11 +201,22 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         resetCamera(false);
     }
 
+    @SuppressWarnings("MissingPermission")
     public void resetCamera(boolean animate) {
         CameraUpdate update = null;
         if (map != null) {
             LatLngBounds.Builder bounds = LatLngBounds.builder();
-            for (PointOfInterest poi : data.getPois()) {
+            ArrayList<PointOfInterest> pois = Data.instance.getPois();
+
+            //Show the PoIs the intent wanted to show us
+            if (intentPois != null) {
+                pois = intentPois;
+                intentPois = null;
+                if (pois.size() == 1) {
+                    setFocusedPOI(pois.get(0));
+                }
+            }
+            for (PointOfInterest poi : pois) {
                 bounds.include(poi.getLocation());
             }
             if (lastLocation != null) {
@@ -282,6 +291,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     @SuppressWarnings("MissingPermission")
     private void setupGoogleApiClient() {
         LocationServices.FusedLocationApi.requestLocationUpdates(googleApiClient, createLocationRequest(), this);
+        lastLocation = LocationServices.FusedLocationApi.getLastLocation(googleApiClient);
         SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(this);
         pref.registerOnSharedPreferenceChangeListener(new SharedPreferenceChangeListener());
         if (pref.getBoolean("pref_notifications", true)) {
@@ -341,7 +351,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     }
 
     public void onJourneyButtonClick(View view) {
-        Log.i(TAG, data.getJourneys().toString());
+        Log.i(TAG, Data.instance.getJourneys().toString());
         openJourneySelectionDrawer();
     }
 
@@ -352,9 +362,9 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
 
     @Override
     public boolean onMarkerClick(Marker marker) {
-        for (PointOfInterest poi : data.getPois()) {
+        for (PointOfInterest poi : Data.instance.getPois()) {
             if (marker.equals(poi.getMarker())) {
-                if (currentPOI == poi) {
+                if (poi.equals(currentPOI)) {
                     openPoiDetailDrawer(poi);
                 } else {
                     setFocusedPOI(poi);

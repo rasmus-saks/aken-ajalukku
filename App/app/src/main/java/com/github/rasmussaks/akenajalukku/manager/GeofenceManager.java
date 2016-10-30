@@ -9,7 +9,6 @@ import android.util.Log;
 
 import com.github.rasmussaks.akenajalukku.activity.MapActivity;
 import com.github.rasmussaks.akenajalukku.model.PointOfInterest;
-import com.github.rasmussaks.akenajalukku.service.GeofenceTransitionsIntentService;
 import com.google.android.gms.common.api.ResultCallback;
 import com.google.android.gms.common.api.Status;
 import com.google.android.gms.location.Geofence;
@@ -40,10 +39,11 @@ public class GeofenceManager extends BaseManager implements ResultCallback<Statu
     }
 
     private void populateGeofencesList() {
+        geofences = new ArrayList<>();
         for (PointOfInterest poi : getContext().getPois()) {
             geofences.add(
                     new Geofence.Builder()
-                            .setRequestId(poi.getTitle())
+                            .setRequestId(String.valueOf(poi.getId()))
                             .setCircularRegion(poi.getLocation().latitude,
                                     poi.getLocation().longitude,
                                     GEOFENCE_RADIUS_IN_METERS)
@@ -104,8 +104,8 @@ public class GeofenceManager extends BaseManager implements ResultCallback<Statu
     }
 
     private PendingIntent getPendingIntent() {
-        Intent intent = new Intent(getContext(), GeofenceTransitionsIntentService.class);
-        return PendingIntent.getService(getContext(), 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+        Intent intent = new Intent("com.aol.android.geofence.ACTION_RECEIVE_GEOFENCE");
+        return PendingIntent.getBroadcast(getContext(), 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
     }
 
     private GeofencingRequest getGeofencingRequest() {

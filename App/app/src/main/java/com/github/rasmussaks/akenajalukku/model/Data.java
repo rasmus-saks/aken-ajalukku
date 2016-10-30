@@ -8,9 +8,6 @@ import com.google.android.gms.maps.model.LatLng;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-/**
- * Created by AlWilliam on 10/29/2016.
- */
 
 public class Data implements Parcelable {
     public static final Creator<Data> CREATOR = new Creator<Data>() {
@@ -24,6 +21,7 @@ public class Data implements Parcelable {
             return new Data[size];
         }
     };
+    public static Data instance = new Data();
     private ArrayList<PointOfInterest> pois = new ArrayList<>();
     private ArrayList<Journey> journeys = new ArrayList<>();
 
@@ -67,6 +65,13 @@ public class Data implements Parcelable {
 
     public void setJourneys(ArrayList<Journey> journeys) {
         this.journeys = journeys;
+    }
+
+    public PointOfInterest getPoiById(int id) {
+        for (PointOfInterest poi : pois) {
+            if (poi.getId() == id) return poi;
+        }
+        return null;
     }
 
     @Override
