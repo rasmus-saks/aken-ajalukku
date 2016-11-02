@@ -1,12 +1,16 @@
 package com.github.rasmussaks.akenajalukku.activity;
 
 import android.Manifest;
+import android.app.NotificationManager;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.location.Location;
 import android.os.Build;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
@@ -27,12 +31,12 @@ import com.github.rasmussaks.akenajalukku.fragment.DrawerFragment;
 import com.github.rasmussaks.akenajalukku.fragment.JourneySelectionDrawerFragment;
 import com.github.rasmussaks.akenajalukku.fragment.POIDrawerFragment;
 import com.github.rasmussaks.akenajalukku.layout.NoTouchSlidingUpPanelLayout;
+import com.github.rasmussaks.akenajalukku.manager.GeofenceManager;
 import com.github.rasmussaks.akenajalukku.model.Data;
 import com.github.rasmussaks.akenajalukku.model.PointOfInterest;
+import com.github.rasmussaks.akenajalukku.util.Constants;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.common.api.PendingResult;
-import com.google.android.gms.common.api.Status;
 import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
@@ -49,26 +53,31 @@ import com.google.android.gms.maps.model.Polyline;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
+import static com.github.rasmussaks.akenajalukku.util.Constants.TAG;
 
 public class MapActivity extends AppCompatActivity implements OnMapReadyCallback,
         GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener,
         DirectionCallback, GoogleMap.OnMarkerClickListener, SlidingUpPanelLayout.PanelSlideListener,
         LocationListener, DrawerFragment.DrawerFragmentListener {
-
     private static final int REQUEST_TO_SETUP_MAP = 1;
-    private static String TAG = "aken-ajalukku";
+    private static boolean visible;
     private GoogleMap map;
     private GoogleApiClient googleApiClient;
     private Location lastLocation;
     private PointOfInterest currentPOI;
-    private Data data;
     private Polyline currentPolyline;
     private SlidingUpPanelLayout drawerLayout;
     private boolean enableLocation = false;
     private boolean openDrawer = false; //Open the drawer when the map is loaded?
+    private GeofenceManager geofenceManager;
+    private ArrayList<PointOfInterest> intentPois;
+    private SharedPreferenceChangeListener preferenceChangeListener = new SharedPreferenceChangeListener();
 
-    public Data getData() {
-        return data;
+    public static boolean isVisible() {
+        return visible;
     }
 
     @Override
@@ -83,6 +92,10 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         if (savedInstanceState != null) {
             unbundle(savedInstanceState);
         }
+        Intent intent = getIntent();
+        if (intent != null && intent.hasExtra("pois")) {
+            intentPois = intent.getParcelableArrayListExtra("pois");
+        }
         Fragment drawerFragment = getSupportFragmentManager().findFragmentById(R.id.drawer_container);
         if (drawerFragment != null) {
             ((DrawerFragment) drawerFragment).setDrawerFragmentListener(this);
@@ -96,39 +109,48 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, REQUEST_TO_SETUP_MAP);
         } else {
             enableLocation = true;
-            setupListeners();
+            loadMap();
         }
-        if (data == null) {
-            data = new Data();
-        }
+        NotificationManager notifMgr =
+                (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        notifMgr.cancel(Constants.NOTIFICATION_ID);
+        geofenceManager = new GeofenceManager(this);
+
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        visible = true;
+        Log.d(TAG, "Resumed");
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        visible = false;
+        Log.d(TAG, "Paused");
     }
 
     public void unbundle(Bundle bundle) {
-        data = bundle.getParcelable("data");
+        Data.instance = bundle.getParcelable("data");
         int curIdx = bundle.getInt("currentPOI");
         if (curIdx != -1) {
-            currentPOI = data.getPois().get(curIdx);
+            currentPOI = Data.instance.getPois().get(curIdx);
         }
     }
 
-    private void setupListeners() {
+    private void loadMap() {
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
-        if (googleApiClient == null) {
-            googleApiClient = new GoogleApiClient.Builder(this)
-                    .addConnectionCallbacks(this)
-                    .addOnConnectionFailedListener(this)
-                    .addApi(LocationServices.API)
-                    .build();
-        }
     }
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putParcelable("data", data);
-        outState.putInt("currentPOI", data.getPois().indexOf(currentPOI));
+        outState.putParcelable("data", Data.instance);
+        outState.putInt("currentPOI", Data.instance.getPois().indexOf(currentPOI));
         outState.putBoolean("drawerExpanded", drawerLayout.getPanelState() == SlidingUpPanelLayout.PanelState.EXPANDED);
     }
 
@@ -138,6 +160,14 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         map.setOnMarkerClickListener(this);
         Log.i(TAG, "Map is ready");
         setupMap();
+    }
+
+    public List<PointOfInterest> getPois() {
+        return Collections.unmodifiableList(Data.instance.getPois());
+    }
+
+    public GoogleApiClient getGoogleApiClient() {
+        return googleApiClient;
     }
 
     @Override
@@ -154,11 +184,8 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
             case REQUEST_TO_SETUP_MAP:
                 if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     enableLocation = true;
-                    setupListeners();
-                    googleApiClient.connect();
-                } else {
-                    setupListeners();
                 }
+                loadMap();
                 break;
         }
     }
@@ -168,14 +195,23 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         if (enableLocation) map.setMyLocationEnabled(true);
         map.setPadding(0, getResources().getDimensionPixelSize(R.dimen.mapview_top_padding), 0, 0);
         map.getUiSettings().setMyLocationButtonEnabled(false);
-        for (PointOfInterest poi : data.getPois()) {
-            poi.setMarker(map.addMarker(poi.getMarkerOptions()));
+        for (PointOfInterest poi : Data.instance.getPois()) {
+            resetPoiMarker(poi);
+        }
+        //If location is enabled, start the Google API client
+        if (googleApiClient == null && enableLocation) {
+            googleApiClient = new GoogleApiClient.Builder(this)
+                    .addConnectionCallbacks(this)
+                    .addOnConnectionFailedListener(this)
+                    .addApi(LocationServices.API)
+                    .build();
+            googleApiClient.connect();
         }
         map.setOnMapLoadedCallback(new GoogleMap.OnMapLoadedCallback() {
             @Override
             public void onMapLoaded() {
                 if (currentPOI == null) {
-                    updateMap();
+                    if (!enableLocation) updateMap();
                 } else {
                     setFocusedPOI(currentPOI);
                     if (openDrawer) {
@@ -190,11 +226,22 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         resetCamera(false);
     }
 
+    @SuppressWarnings("MissingPermission")
     public void resetCamera(boolean animate) {
         CameraUpdate update = null;
         if (map != null) {
             LatLngBounds.Builder bounds = LatLngBounds.builder();
-            for (PointOfInterest poi : data.getPois()) {
+            ArrayList<PointOfInterest> pois = Data.instance.getPois();
+
+            //Show the PoIs the intent wanted to show us
+            if (intentPois != null) {
+                pois = intentPois;
+                intentPois = null;
+                if (pois.size() == 1) {
+                    setFocusedPOI(pois.get(0));
+                }
+            }
+            for (PointOfInterest poi : pois) {
                 bounds.include(poi.getLocation());
             }
             if (lastLocation != null) {
@@ -261,14 +308,20 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
 
     @Override
     public void onConnected(@Nullable Bundle bundle) {
-        registerLocationUpdatesListener();
+        setupGoogleApiClient();
         updateMap();
         Log.d(TAG, "Registered location updates listener");
     }
 
     @SuppressWarnings("MissingPermission")
-    private PendingResult<Status> registerLocationUpdatesListener() {
-        return LocationServices.FusedLocationApi.requestLocationUpdates(googleApiClient, createLocationRequest(), this);
+    private void setupGoogleApiClient() {
+        LocationServices.FusedLocationApi.requestLocationUpdates(googleApiClient, createLocationRequest(), this);
+        lastLocation = LocationServices.FusedLocationApi.getLastLocation(googleApiClient);
+        SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(this);
+        pref.registerOnSharedPreferenceChangeListener(preferenceChangeListener);
+        if (pref.getBoolean("pref_notifications", true)) {
+            geofenceManager.addGeofences();
+        }
     }
 
     protected LocationRequest createLocationRequest() {
@@ -323,7 +376,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     }
 
     public void onJourneyButtonClick(View view) {
-        Log.i(TAG, data.getJourneys().toString());
+        Log.i(TAG, Data.instance.getJourneys().toString());
         openJourneySelectionDrawer();
     }
 
@@ -334,9 +387,9 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
 
     @Override
     public boolean onMarkerClick(Marker marker) {
-        for (PointOfInterest poi : data.getPois()) {
+        for (PointOfInterest poi : Data.instance.getPois()) {
             if (marker.equals(poi.getMarker())) {
-                if (currentPOI == poi) {
+                if (poi.equals(currentPOI)) {
                     openPoiDetailDrawer(poi);
                 } else {
                     setFocusedPOI(poi);
@@ -390,6 +443,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         drawerLayout.setPanelState(SlidingUpPanelLayout.PanelState.HIDDEN);
     }
 
+
     @Override
     public void onBackPressed() {
         if (drawerLayout.getPanelState() == SlidingUpPanelLayout.PanelState.EXPANDED) {
@@ -398,6 +452,19 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
             setFocusedPOI(null);
         } else {
             finish();
+        }
+    }
+
+    private class SharedPreferenceChangeListener implements SharedPreferences.OnSharedPreferenceChangeListener {
+        @Override
+        public void onSharedPreferenceChanged(SharedPreferences pref, String key) {
+            if (key.equals("pref_notifications")) {
+                if (pref.getBoolean("pref_notifications", true)) {
+                    geofenceManager.addGeofences();
+                } else {
+                    geofenceManager.removeGeofences();
+                }
+            }
         }
     }
 }
