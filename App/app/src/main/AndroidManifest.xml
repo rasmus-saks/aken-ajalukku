@@ -47,6 +47,11 @@
                 <action android:name="com.aol.android.geofence.ACTION_RECEIVE_GEOFENCE" />
             </intent-filter>
         </receiver>
+
+        <activity
+            android:name=".activity.VideoPlayerActivity"
+            android:configChanges="orientation|keyboardHidden|screenLayout|screenSize"
+            android:theme="@style/AppTheme.VideoPlayer" />
     </application>
 
 </manifest>

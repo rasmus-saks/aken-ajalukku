@@ -7,4 +7,5 @@
     <color name="the_story">#ababab</color>
     <color name="divider">#FFDDDDDD</color>
     <color name="whiteText">#FFFFFF</color>
+    <color name="transparent_black">#80000000</color>
 </resources>

@@ -25,13 +25,19 @@ public class PointOfInterest implements Parcelable {
     private String description;
     private Marker marker;
     private String imageUrl;
+    private String videoUrl;
 
-    public PointOfInterest(int id,LatLng location, String title, String description, String imageUrl) {
+    public PointOfInterest(int id, LatLng location, String title, String description, String imageUrl) {
+        this(id, location, title, description, imageUrl, null);
+    }
+
+    public PointOfInterest(int id, LatLng location, String title, String description, String imageUrl, String videoUrl) {
         this.id=id;
         this.location = location;
         this.title = title;
         this.description = description;
         this.imageUrl = imageUrl;
+        this.videoUrl = videoUrl;
     }
 
     private PointOfInterest(Parcel in) {
@@ -40,6 +46,7 @@ public class PointOfInterest implements Parcelable {
         title = in.readString();
         description = in.readString();
         imageUrl = in.readString();
+        videoUrl = in.readString();
     }
 
     public int getId() {
@@ -78,6 +85,10 @@ public class PointOfInterest implements Parcelable {
         return new MarkerOptions().title(title).position(location);
     }
 
+    public String getVideoUrl() {
+        return videoUrl;
+    }
+
     @Override
     public int describeContents() {
         return 0;
@@ -90,6 +101,7 @@ public class PointOfInterest implements Parcelable {
         dest.writeString(title);
         dest.writeString(description);
         dest.writeString(imageUrl);
+        dest.writeString(videoUrl);
     }
 
     @Override

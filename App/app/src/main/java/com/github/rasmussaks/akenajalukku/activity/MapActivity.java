@@ -455,6 +455,14 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         }
     }
 
+    public void onVideoImageClick(View view) {
+        POIDrawerFragment fragment = (POIDrawerFragment) getSupportFragmentManager().findFragmentById(R.id.drawer_container);
+        Intent intent = new Intent(this, VideoPlayerActivity.class);
+        intent.putExtra("url", fragment.getPoi().getVideoUrl());
+        intent.putExtra("title", fragment.getPoi().getTitle());
+        startActivity(intent);
+    }
+
     private class SharedPreferenceChangeListener implements SharedPreferences.OnSharedPreferenceChangeListener {
         @Override
         public void onSharedPreferenceChanged(SharedPreferences pref, String key) {

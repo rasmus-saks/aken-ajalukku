@@ -34,6 +34,9 @@ public class POIDrawerFragment extends DrawerFragment implements View.OnClickLis
         }
     }
 
+    public PointOfInterest getPoi() {
+        return poi;
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
