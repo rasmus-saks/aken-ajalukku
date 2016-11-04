@@ -238,7 +238,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                 pois = intentPois;
                 intentPois = null;
                 if (pois.size() == 1) {
-                    setFocusedPOI(pois.get(0));
+                    setFocusedPOI(Data.instance.getPoiById(pois.get(0).getId()));
                 }
             }
             for (PointOfInterest poi : pois) {
@@ -397,7 +397,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                 return true;
             }
         }
-        return false;
+        return true;
     }
 
     private void openPoiDetailDrawer(PointOfInterest poi) {
