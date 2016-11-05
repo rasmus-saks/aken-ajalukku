@@ -8,6 +8,7 @@ import android.support.annotation.NonNull;
 import android.util.Log;
 
 import com.github.rasmussaks.akenajalukku.activity.MapActivity;
+import com.github.rasmussaks.akenajalukku.model.Data;
 import com.github.rasmussaks.akenajalukku.model.PointOfInterest;
 import com.google.android.gms.common.api.ResultCallback;
 import com.google.android.gms.common.api.Status;
@@ -41,7 +42,7 @@ public class GeofenceManager extends BaseManager implements ResultCallback<Statu
 
     private void populateGeofencesList() {
         geofences = new ArrayList<>();
-        for (PointOfInterest poi : getContext().getPois()) {
+        for (PointOfInterest poi : Data.instance.getPois()) {
             geofences.add(
                     new Geofence.Builder()
                             .setRequestId(String.valueOf(poi.getId()))
@@ -82,7 +83,7 @@ public class GeofenceManager extends BaseManager implements ResultCallback<Statu
 
     public void removeGeofences() {
         final List<String> fences = new ArrayList<>();
-        for (PointOfInterest poi : getContext().getPois()) {
+        for (PointOfInterest poi : Data.instance.getPois()) {
             fences.add(String.valueOf(poi.getId()));
         }
         LocationServices.GeofencingApi.removeGeofences(
