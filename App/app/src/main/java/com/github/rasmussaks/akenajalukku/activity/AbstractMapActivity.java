@@ -394,7 +394,9 @@ public abstract class AbstractMapActivity extends AppCompatActivity implements L
 
     @Override
     public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
-
+        Log.e(TAG, "Failed to connect");
+        Log.e(TAG, connectionResult.getErrorMessage());
+        throw new RuntimeException(connectionResult.getErrorMessage());
     }
 
     @Override
