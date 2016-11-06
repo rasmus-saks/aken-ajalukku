@@ -39,6 +39,7 @@ public class Journey implements Parcelable {
         id = in.readInt();
         title = in.readString();
         description = in.readString();
+        poiIdList = new ArrayList<>();
         in.readList(poiIdList, null);
         initialized = false;
     }
