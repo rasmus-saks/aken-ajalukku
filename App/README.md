@@ -16,7 +16,9 @@ Release version can be built using `gradlew assembleRelease`, but it is automati
 If you're looking to sign the app with your own keys, refer to [Sign Your App](https://developer.android.com/studio/publish/app-signing.html) in the Android Studio manual for
 generating a keystore file and then set `RELEASE_STORE_FILE`, `RELEASE_STORE_PASSWORD`, `RELEASE_KEY_ALIAS` and `RELEASE_KEY_PASSWORD` in your `~/.gradle/gradle.properties` file.
 
-Gradle will automatically handle cases where there is an existing older version of the app present on the phone. 
+Gradle will automatically handle cases where there is an existing older version of the app present on the phone.
+
+To run the unit tests, use `gradlew test`. To run instrumented tests on all connected Android devices and emulators, use `gradlew connectedAndroidTest`.
 
 # License
 This project is released under the GNU GPLv3 license, for more information see `LICENSE.txt`
