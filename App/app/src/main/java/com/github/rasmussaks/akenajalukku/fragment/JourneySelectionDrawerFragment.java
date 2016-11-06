@@ -9,6 +9,7 @@ import android.widget.ImageButton;
 import android.widget.ListView;
 
 import com.github.rasmussaks.akenajalukku.R;
+import com.github.rasmussaks.akenajalukku.activity.MapActivity;
 import com.github.rasmussaks.akenajalukku.model.Data;
 import com.github.rasmussaks.akenajalukku.util.JourneyAdapter;
 
@@ -40,7 +41,7 @@ public class JourneySelectionDrawerFragment extends DrawerFragment implements Vi
         View view = inflater.inflate(R.layout.fragment_journeyselectiondrawer, container, false);
         ImageButton close = (ImageButton) view.findViewById(R.id.close_button);
         ListView journeyList = (ListView) view.findViewById(R.id.journey_list);
-        journeyAdapter = new JourneyAdapter(Data.instance.getJourneys(), inflater);
+        journeyAdapter = new JourneyAdapter(Data.instance.getJourneys(), inflater, (MapActivity) getActivity());
         journeyList.setAdapter(journeyAdapter);
         close.setOnClickListener(this);
         return view;

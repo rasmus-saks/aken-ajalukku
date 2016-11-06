@@ -17,6 +17,7 @@ import android.view.View;
 
 import com.github.rasmussaks.akenajalukku.R;
 import com.github.rasmussaks.akenajalukku.fragment.DrawerFragment;
+import com.github.rasmussaks.akenajalukku.fragment.JourneyFragment;
 import com.github.rasmussaks.akenajalukku.fragment.JourneySelectionDrawerFragment;
 import com.github.rasmussaks.akenajalukku.fragment.POIDrawerFragment;
 import com.github.rasmussaks.akenajalukku.layout.NoTouchSlidingUpPanelLayout;
@@ -145,6 +146,8 @@ public abstract class AbstractMapActivity extends AppCompatActivity implements L
         Log.i(TAG, "Map is ready");
         setupMap();
     }
+
+
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
@@ -285,6 +288,10 @@ public abstract class AbstractMapActivity extends AppCompatActivity implements L
         }
     }
 
+    public abstract void onJourneyDetailSelect(int journeyId);
+
+    public abstract void onJourneyDetailButtonClick(int journeyId);
+
     public void openPoiDetailDrawer(PointOfInterest poi) {
         POIDrawerFragment fragment = new POIDrawerFragment();
         Bundle bundle = new Bundle();
@@ -305,6 +312,20 @@ public abstract class AbstractMapActivity extends AppCompatActivity implements L
         transaction.commit();
         drawerLayout.setPanelState(SlidingUpPanelLayout.PanelState.EXPANDED);
     }
+
+    public void openJourneyDetailDrawer(int journeyId, int journeyState) {
+        JourneyFragment fragment = new JourneyFragment();
+        Bundle bundle = new Bundle();
+        bundle.putInt("journeyId", journeyId);
+        bundle.putInt("state", journeyState);
+        fragment.setDrawerFragmentListener(this);
+        fragment.setArguments(bundle);
+        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+        transaction.replace(R.id.drawer_container, fragment);
+        transaction.commit();
+        drawerLayout.setPanelState(SlidingUpPanelLayout.PanelState.EXPANDED);
+    }
+
 
     @Override
     public void onConnected(@Nullable Bundle bundle) {

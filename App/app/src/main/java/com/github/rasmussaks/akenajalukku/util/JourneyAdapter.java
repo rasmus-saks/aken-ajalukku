@@ -8,6 +8,7 @@ import android.widget.BaseAdapter;
 import android.widget.TextView;
 
 import com.github.rasmussaks.akenajalukku.R;
+import com.github.rasmussaks.akenajalukku.activity.MapActivity;
 import com.github.rasmussaks.akenajalukku.model.Journey;
 
 import java.util.ArrayList;
@@ -16,10 +17,12 @@ import java.util.ArrayList;
 public class JourneyAdapter extends BaseAdapter {
     private ArrayList<Journey> journeys;
     private LayoutInflater inflater;
+    private MapActivity context;
 
-    public JourneyAdapter(ArrayList<Journey> journeys, LayoutInflater inflater) {
+    public JourneyAdapter(ArrayList<Journey> journeys, LayoutInflater inflater, MapActivity context) {
         this.journeys = journeys;
         this.inflater = inflater;
+        this.context = context;
     }
 
 
@@ -41,7 +44,7 @@ public class JourneyAdapter extends BaseAdapter {
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         // Get the data item for this position
-        Journey journey = (Journey) getItem(position);
+        final Journey journey = (Journey) getItem(position);
         // Check if an existing view is being reused, otherwise inflate the view
         if (convertView == null) {
             convertView = inflater.inflate(R.layout.journey_item, parent, false);
@@ -50,6 +53,12 @@ public class JourneyAdapter extends BaseAdapter {
         TextView journeyTitle = (TextView) convertView.findViewById(R.id.journeyTitle);
         // Populate the data into the template view using the data object
         journeyTitle.setText(journey.getTitle());
+        convertView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                context.onJourneyDetailSelect(journey.getId());
+            }
+        });
         // Return the completed view to render on screen
         return convertView;
 

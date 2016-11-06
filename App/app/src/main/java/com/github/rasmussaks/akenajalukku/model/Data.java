@@ -73,6 +73,12 @@ public class Data implements Parcelable {
         }
         return null;
     }
+    public Journey getJourneyById(int id) {
+        for (Journey journey : journeys) {
+            if (journey.getId() == id) return journey;
+        }
+        return null;
+    }
 
     @Override
     public int describeContents() {

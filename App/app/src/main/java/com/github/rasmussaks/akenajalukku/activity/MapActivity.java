@@ -7,11 +7,14 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.ActionBar;
 import android.util.Log;
 import android.view.View;
 
 import com.github.rasmussaks.akenajalukku.R;
+import com.github.rasmussaks.akenajalukku.fragment.JourneyFragment;
+import com.github.rasmussaks.akenajalukku.fragment.POIDrawerFragment;
 import com.github.rasmussaks.akenajalukku.manager.GeofenceManager;
 import com.github.rasmussaks.akenajalukku.model.Data;
 import com.github.rasmussaks.akenajalukku.model.PointOfInterest;
@@ -54,7 +57,6 @@ public class MapActivity extends AbstractMapActivity {
     }
 
 
-
     public void unbundle(Bundle bundle) {
         Data.instance = bundle.getParcelable("data");
         int curIdx = bundle.getInt("currentPoi");
@@ -70,7 +72,6 @@ public class MapActivity extends AbstractMapActivity {
         outState.putParcelable("data", Data.instance);
         outState.putInt("currentPoi", Data.instance.getPois().indexOf(currentPoi));
     }
-
 
 
     @Override
@@ -97,8 +98,16 @@ public class MapActivity extends AbstractMapActivity {
     }
 
     public void onJourneyButtonClick(View view) {
-        Log.i(TAG, Data.instance.getJourneys().toString());
         openJourneySelectionDrawer();
+    }
+
+    public void onJourneyDetailSelect(int journeyId) {
+        openJourneyDetailDrawer(journeyId, JourneyFragment.START);
+    }
+
+    @Override
+    public void onJourneyDetailButtonClick(int journeyId) {
+        //TODO Activate ongoing journey state for map
     }
 
     private void openSettings() {

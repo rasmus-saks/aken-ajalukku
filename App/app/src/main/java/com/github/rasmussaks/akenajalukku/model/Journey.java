@@ -98,6 +98,10 @@ public class Journey implements Parcelable{
         initialized=true;
     }
 
+    public PointOfInterest getFirstPoi(){
+        return poiList.get(0);
+    }
+
     @Override
     public String toString() {
         return "Journey{" +
