@@ -121,7 +121,7 @@ public abstract class AbstractMapActivity extends AppCompatActivity implements L
     protected void onResume() {
         super.onResume();
         visible = true;
-        if (googleApiClient != null) {
+        if (googleApiClient != null && googleApiClient.isConnected()) {
             setupGoogleApiClient();
         }
     }
@@ -133,6 +133,7 @@ public abstract class AbstractMapActivity extends AppCompatActivity implements L
         Log.d(TAG, "Paused " + getClass().getSimpleName());
         if (googleApiClient != null) {
             LocationServices.FusedLocationApi.removeLocationUpdates(googleApiClient, this);
+            googleApiClient.disconnect();
         }
 
     }
@@ -429,6 +430,7 @@ public abstract class AbstractMapActivity extends AppCompatActivity implements L
 
     public float getDistanceTo(PointOfInterest poi) {
         float[] results = new float[1];
+        if (getLastLocation() == null) return Float.MAX_VALUE;
         Location.distanceBetween(getLastLocation().getLatitude(), getLastLocation().getLongitude(),
                 poi.getLocation().latitude, poi.getLocation().longitude, results);
         return results[0];
