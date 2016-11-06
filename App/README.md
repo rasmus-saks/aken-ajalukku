@@ -18,6 +18,7 @@ generating a keystore file and then set `RELEASE_STORE_FILE`, `RELEASE_STORE_PAS
 
 Gradle will automatically handle cases where there is an existing older version of the app present on the phone.
 
+# Testing
 To run the unit tests, use `gradlew test`. To run instrumented tests on all connected Android devices and emulators, use `gradlew connectedAndroidTest`.
 
 # License
