@@ -16,4 +16,5 @@
     <string name="notification_poi_nearby">%s is nearby!</string>
     <string name="notification_pois_nearby">%d points of interest nearby!</string>
     <string name="notification_detail">Tap to find out more</string>
+    <string name="journey_finished">Journey finished!</string>
 </resources>

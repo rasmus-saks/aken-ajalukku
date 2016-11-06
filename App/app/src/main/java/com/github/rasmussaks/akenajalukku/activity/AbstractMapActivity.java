@@ -11,6 +11,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
@@ -23,7 +24,9 @@ import com.github.rasmussaks.akenajalukku.fragment.POIDrawerFragment;
 import com.github.rasmussaks.akenajalukku.layout.NoTouchSlidingUpPanelLayout;
 import com.github.rasmussaks.akenajalukku.model.Data;
 import com.github.rasmussaks.akenajalukku.model.PointOfInterest;
+import com.github.rasmussaks.akenajalukku.util.Constants;
 import com.github.rasmussaks.akenajalukku.util.DirectionsTaskListener;
+import com.github.rasmussaks.akenajalukku.util.DirectionsTaskResponse;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationListener;
@@ -39,7 +42,6 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.Polyline;
-import com.google.android.gms.maps.model.PolylineOptions;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 
 import java.util.ArrayList;
@@ -70,6 +72,8 @@ public abstract class AbstractMapActivity extends AppCompatActivity implements L
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView();
+        ActionBar bar = getSupportActionBar();
+        if (bar != null) bar.hide();
         Intent intent = getIntent();
         if (intent != null && intent.hasExtra("pois")) {
             intentPois = intent.getParcelableArrayListExtra("pois");
@@ -78,6 +82,10 @@ public abstract class AbstractMapActivity extends AppCompatActivity implements L
         Fragment drawerFragment = getSupportFragmentManager().findFragmentById(R.id.drawer_container);
         if (drawerFragment != null) {
             ((DrawerFragment) drawerFragment).setDrawerFragmentListener(this);
+        }
+        if (savedInstanceState != null) {
+            Data.instance = savedInstanceState.getParcelable("data");
+            Log.d(TAG, "Load data " + Data.instance);
         }
 
         drawerLayout = (NoTouchSlidingUpPanelLayout) findViewById(R.id.sliding_layout);
@@ -97,28 +105,49 @@ public abstract class AbstractMapActivity extends AppCompatActivity implements L
         }
     }
 
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putParcelable("data", Data.instance);
+    }
+
+    public ArrayList<PointOfInterest> getPois() {
+        return Data.instance.getPois();
+    }
+
     public abstract void setContentView();
 
     @Override
     protected void onResume() {
         super.onResume();
         visible = true;
-        Log.d(TAG, "Resumed");
+        if (googleApiClient != null) {
+            setupGoogleApiClient();
+        }
     }
 
     @Override
     protected void onPause() {
         super.onPause();
         visible = false;
-        Log.d(TAG, "Paused");
+        Log.d(TAG, "Paused " + getClass().getSimpleName());
+        LocationServices.FusedLocationApi.removeLocationUpdates(googleApiClient, this);
     }
 
     @Override
     protected void onStart() {
         super.onStart();
+        Log.d(TAG, "Started " + getClass().getSimpleName());
         if (googleApiClient != null) {
             googleApiClient.connect();
         }
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        Log.d(TAG, "Stopped " + getClass().getSimpleName());
+
     }
 
     public boolean isLocationEnabled() {
@@ -131,6 +160,10 @@ public abstract class AbstractMapActivity extends AppCompatActivity implements L
 
     public GoogleApiClient getGoogleApiClient() {
         return googleApiClient;
+    }
+
+    public GoogleMap getMap() {
+        return map;
     }
 
     private void loadMap() {
@@ -146,7 +179,6 @@ public abstract class AbstractMapActivity extends AppCompatActivity implements L
         Log.i(TAG, "Map is ready");
         setupMap();
     }
-
 
 
     @Override
@@ -167,13 +199,27 @@ public abstract class AbstractMapActivity extends AppCompatActivity implements L
     }
 
     @SuppressWarnings("MissingPermission")
-    private void setupMap() {
+    void setupMap() {
         if (locationEnabled) map.setMyLocationEnabled(true);
         map.setPadding(0, getResources().getDimensionPixelSize(R.dimen.mapview_top_padding), 0, 0);
         map.getUiSettings().setMyLocationButtonEnabled(false);
         for (PointOfInterest poi : Data.instance.getPois()) {
+            if (poi.getMarker() != null) poi.getMarker().remove();
+        }
+        for (PointOfInterest poi : getPois()) {
             resetPoiMarker(poi);
         }
+        startGoogleApiClient();
+
+        map.setOnMapLoadedCallback(new GoogleMap.OnMapLoadedCallback() {
+            @Override
+            public void onMapLoaded() {
+                AbstractMapActivity.this.onMapLoaded();
+            }
+        });
+    }
+
+    private void startGoogleApiClient() {
         //If location is enabled, start the Google API client
         if (googleApiClient == null && locationEnabled) {
             googleApiClient = new GoogleApiClient.Builder(this)
@@ -183,12 +229,6 @@ public abstract class AbstractMapActivity extends AppCompatActivity implements L
                     .build();
             googleApiClient.connect();
         }
-        map.setOnMapLoadedCallback(new GoogleMap.OnMapLoadedCallback() {
-            @Override
-            public void onMapLoaded() {
-                AbstractMapActivity.this.onMapLoaded();
-            }
-        });
     }
 
     @SuppressWarnings("MissingPermission")
@@ -196,7 +236,7 @@ public abstract class AbstractMapActivity extends AppCompatActivity implements L
         CameraUpdate update = null;
         if (map != null) {
             LatLngBounds.Builder bounds = LatLngBounds.builder();
-            ArrayList<PointOfInterest> pois = Data.instance.getPois();
+            ArrayList<PointOfInterest> pois = getPois();
 
             //Show the PoIs the intent wanted to show us
             if (intentPois != null) {
@@ -254,7 +294,6 @@ public abstract class AbstractMapActivity extends AppCompatActivity implements L
     private void setupGoogleApiClient() {
         LocationServices.FusedLocationApi.requestLocationUpdates(googleApiClient, createLocationRequest(), this);
         lastLocation = LocationServices.FusedLocationApi.getLastLocation(googleApiClient);
-
     }
 
     public void highlightPoiMarker(PointOfInterest poi) {
@@ -272,25 +311,29 @@ public abstract class AbstractMapActivity extends AppCompatActivity implements L
     }
 
     @Override
-    public void onDirectionsPolyline(PolylineOptions polylineOptions) {
+    public void onDirectionsTaskResponse(DirectionsTaskResponse response) {
         if (currentPolyline != null) {
             currentPolyline.remove();
         }
         Log.v(TAG, "Got directions");
-        if (polylineOptions != null) {
-            List<LatLng> points = polylineOptions.getPoints();
+        if (response != null) {
+            List<LatLng> points = response.getPolylineOptions().getPoints();
             LatLngBounds.Builder bnds = LatLngBounds.builder().include(new LatLng(lastLocation.getLatitude(), lastLocation.getLongitude()));
             for (LatLng point : points) {
                 bnds.include(point);
             }
             map.animateCamera(CameraUpdateFactory.newLatLngBounds(bnds.build(), 200));
-            currentPolyline = map.addPolyline(polylineOptions);
+            currentPolyline = map.addPolyline(response.getPolylineOptions());
         }
     }
 
-    public abstract void onJourneyDetailSelect(int journeyId);
+    public void onJourneyDetailSelect(int journeyId) {
 
-    public abstract void onJourneyDetailButtonClick(int journeyId);
+    }
+
+    public void onJourneyDetailButtonClick(int journeyId) {
+
+    }
 
     public void openPoiDetailDrawer(PointOfInterest poi) {
         POIDrawerFragment fragment = new POIDrawerFragment();
@@ -356,6 +399,10 @@ public abstract class AbstractMapActivity extends AppCompatActivity implements L
         drawerLayout.setPanelState(SlidingUpPanelLayout.PanelState.HIDDEN);
     }
 
+    public void onJourneyButtonClick(View view) {
+        openJourneySelectionDrawer();
+    }
+
     @Override
     public void onLocationChanged(Location location) {
         lastLocation = location;
@@ -373,6 +420,17 @@ public abstract class AbstractMapActivity extends AppCompatActivity implements L
         intent.putExtra("url", fragment.getPoi().getVideoUrl());
         intent.putExtra("title", fragment.getPoi().getTitle());
         startActivity(intent);
+    }
+
+    public float getDistanceTo(PointOfInterest poi) {
+        float[] results = new float[1];
+        Location.distanceBetween(getLastLocation().getLatitude(), getLastLocation().getLongitude(),
+                poi.getLocation().latitude, poi.getLocation().longitude, results);
+        return results[0];
+    }
+
+    public boolean isCloseTo(PointOfInterest poi) {
+        return getDistanceTo(poi) <= Constants.GEOFENCE_RADIUS_IN_METERS;
     }
 
     @Override

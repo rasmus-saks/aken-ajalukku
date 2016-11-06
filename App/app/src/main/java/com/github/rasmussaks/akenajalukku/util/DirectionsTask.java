@@ -1,14 +1,11 @@
 package com.github.rasmussaks.akenajalukku.util;
 
 import android.content.Context;
-import android.graphics.Color;
 import android.os.AsyncTask;
 import android.text.TextUtils;
 
 import com.github.rasmussaks.akenajalukku.R;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.PolylineOptions;
-import com.google.maps.android.PolyUtil;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -21,7 +18,7 @@ import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.List;
 
-public class DirectionsTask extends AsyncTask<LatLng, Void, PolylineOptions> {
+public class DirectionsTask extends AsyncTask<LatLng, Void, DirectionsTaskResponse> {
 
     private Context context;
     private DirectionsTaskListener listener;
@@ -32,14 +29,15 @@ public class DirectionsTask extends AsyncTask<LatLng, Void, PolylineOptions> {
     }
 
     @Override
-    protected PolylineOptions doInBackground(LatLng... params) {
+    protected DirectionsTaskResponse doInBackground(LatLng... params) {
         try {
             LatLng start = params[0];
             LatLng end = params[params.length - 1];
             String url = "https://maps.googleapis.com/maps/api/directions/json" +
                     "?key=" + context.getString(R.string.google_maps_key)
                     + "&origin=" + start.latitude + "," + start.longitude
-                    + "&destination=" + end.latitude + "," + end.longitude;
+                    + "&destination=" + end.latitude + "," + end.longitude
+                    + "&units=metric";
             if (params.length > 2) {
                 List<String> waypoints = new ArrayList<>();
                 for (int i = 1; i < params.length - 1; i++) {
@@ -58,8 +56,7 @@ public class DirectionsTask extends AsyncTask<LatLng, Void, PolylineOptions> {
                 builder.append(line).append("\n");
             }
             JSONObject object = new JSONObject(builder.toString());
-            String encoded = object.getJSONArray("routes").getJSONObject(0).getJSONObject("overview_polyline").getString("points");
-            return new PolylineOptions().addAll(PolyUtil.decode(encoded)).width(5).color(Color.RED);
+            return new DirectionsTaskResponse(object);
         } catch (IOException | JSONException e) {
             e.printStackTrace();
         }
@@ -67,8 +64,8 @@ public class DirectionsTask extends AsyncTask<LatLng, Void, PolylineOptions> {
     }
 
     @Override
-    protected void onPostExecute(PolylineOptions polyline) {
-        if (listener != null) listener.onDirectionsPolyline(polyline);
+    protected void onPostExecute(DirectionsTaskResponse polyline) {
+        if (listener != null) listener.onDirectionsTaskResponse(polyline);
         super.onPostExecute(polyline);
     }
 }

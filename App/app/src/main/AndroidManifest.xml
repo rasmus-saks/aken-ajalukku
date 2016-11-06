@@ -52,6 +52,7 @@
             android:name=".activity.VideoPlayerActivity"
             android:configChanges="orientation|keyboardHidden|screenLayout|screenSize"
             android:theme="@style/AppTheme.VideoPlayer" />
+        <activity android:name=".activity.JourneyActivity" />
     </application>
 
 </manifest>

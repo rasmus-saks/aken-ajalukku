@@ -7,22 +7,19 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
-import android.support.v4.app.FragmentTransaction;
-import android.support.v7.app.ActionBar;
 import android.util.Log;
 import android.view.View;
 
 import com.github.rasmussaks.akenajalukku.R;
 import com.github.rasmussaks.akenajalukku.fragment.JourneyFragment;
-import com.github.rasmussaks.akenajalukku.fragment.POIDrawerFragment;
 import com.github.rasmussaks.akenajalukku.manager.GeofenceManager;
 import com.github.rasmussaks.akenajalukku.model.Data;
 import com.github.rasmussaks.akenajalukku.model.PointOfInterest;
 import com.github.rasmussaks.akenajalukku.util.Constants;
 import com.github.rasmussaks.akenajalukku.util.DirectionsTask;
+import com.github.rasmussaks.akenajalukku.util.DirectionsTaskResponse;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
-import com.google.android.gms.maps.model.PolylineOptions;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 
 import static com.github.rasmussaks.akenajalukku.util.Constants.TAG;
@@ -37,8 +34,6 @@ public class MapActivity extends AbstractMapActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        ActionBar bar = getSupportActionBar();
-        if (bar != null) bar.hide();
 
         if (savedInstanceState != null) {
             unbundle(savedInstanceState);
@@ -58,7 +53,6 @@ public class MapActivity extends AbstractMapActivity {
 
 
     public void unbundle(Bundle bundle) {
-        Data.instance = bundle.getParcelable("data");
         int curIdx = bundle.getInt("currentPoi");
         if (curIdx != -1) {
             currentPoi = Data.instance.getPois().get(curIdx);
@@ -69,7 +63,6 @@ public class MapActivity extends AbstractMapActivity {
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putParcelable("data", Data.instance);
         outState.putInt("currentPoi", Data.instance.getPois().indexOf(currentPoi));
     }
 
@@ -97,17 +90,15 @@ public class MapActivity extends AbstractMapActivity {
         openSettings();
     }
 
-    public void onJourneyButtonClick(View view) {
-        openJourneySelectionDrawer();
-    }
-
     public void onJourneyDetailSelect(int journeyId) {
         openJourneyDetailDrawer(journeyId, JourneyFragment.START);
     }
 
     @Override
     public void onJourneyDetailButtonClick(int journeyId) {
-        //TODO Activate ongoing journey state for map
+        Intent intent = new Intent(this, JourneyActivity.class);
+        intent.putExtra("journey", journeyId);
+        startActivity(intent);
     }
 
     private void openSettings() {
@@ -116,8 +107,8 @@ public class MapActivity extends AbstractMapActivity {
     }
 
     @Override
-    public void onDirectionsPolyline(PolylineOptions polylineOptions) {
-        super.onDirectionsPolyline(polylineOptions);
+    public void onDirectionsTaskResponse(DirectionsTaskResponse response) {
+        super.onDirectionsTaskResponse(response);
         highlightPoiMarker(currentPoi);
     }
 
@@ -130,6 +121,12 @@ public class MapActivity extends AbstractMapActivity {
         } else {
             finish();
         }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (getMap() != null) setupMap();
     }
 
     @Override
@@ -159,7 +156,7 @@ public class MapActivity extends AbstractMapActivity {
 
     @Override
     public boolean onMarkerClick(Marker marker) {
-        for (PointOfInterest poi : Data.instance.getPois()) {
+        for (PointOfInterest poi : getPois()) {
             if (marker.equals(poi.getMarker())) {
                 if (poi.equals(currentPoi)) {
                     openPoiDetailDrawer(poi);
