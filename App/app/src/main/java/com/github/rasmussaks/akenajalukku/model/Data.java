@@ -21,24 +21,26 @@ public class Data implements Parcelable {
             return new Data[size];
         }
     };
-    public static Data instance = new Data();
+    public static Data instance = new Data(true);
     private ArrayList<PointOfInterest> pois = new ArrayList<>();
     private ArrayList<Journey> journeys = new ArrayList<>();
 
-    public Data() {
-        // Initialize dummy data
-        pois.add(new PointOfInterest(1, new LatLng(58.3824298, 26.7145573), "Baeri ja Jakobi ristmik", "Päris põnev", "http://i.imgur.com/FGCgIB7.jpg", "https://s3.eu-central-1.amazonaws.com/aken-ajalukku-media/efa0203_f_vi_03014_k_AVI_Microsoft_DV_PAL.mp4"));
-        pois.add(new PointOfInterest(2, new LatLng(58.380144, 26.7223035), "Raekoja plats", "Raekoda on cool", "http://i.imgur.com/ewugjb2.jpg", "https://s3.eu-central-1.amazonaws.com/aken-ajalukku-media/efa0203_f_vi_03014_k_AVI_Microsoft_DV_PAL.mp4"));
-        pois.add(new PointOfInterest(3, new LatLng(58.3740385, 26.7071558), "Tartu rongijaam", "Choo choo", "http://i.imgur.com/mRFDWKl.jpg", "https://s3.eu-central-1.amazonaws.com/aken-ajalukku-media/x264_aac_faac.mp4"));
-        // Add Journeys associated with newly added pois
-        journeys.add(new Journey(1, Arrays.asList(1, 2), "Tartu in the 90's", "I know journeys", pois));
-        journeys.add(new Journey(2, Arrays.asList(2, 3), "Tallinn 1993", "I have the best journeys", pois));
-        journeys.add(new Journey(3, Arrays.asList(2, 3), "The Baltic Chain", "I have the best journeys", pois));
-        journeys.add(new Journey(4, Arrays.asList(2, 3), "Medieval Tallinn", "I have the best journeys", pois));
-        journeys.add(new Journey(5, Arrays.asList(2, 3), "Laulev Revolutsioon", "I have the best journeys", pois));
-        journeys.add(new Journey(6, Arrays.asList(2, 3), "The Singing Revolution", "I have the best journeys", pois));
-        journeys.add(new Journey(7, Arrays.asList(2, 3), "The Singing Revolution", "I have the best journeys", pois));
-        journeys.add(new Journey(8, Arrays.asList(2, 3), "The Singing Revolution", "I have the best journeys", pois));
+    public Data(boolean isDummy) {
+        if (isDummy) {
+            // Initialize dummy data
+            pois.add(new PointOfInterest(1, new LatLng(58.3824298, 26.7145573), "Baeri ja Jakobi ristmik", "Päris põnev", "http://i.imgur.com/FGCgIB7.jpg", "https://s3.eu-central-1.amazonaws.com/aken-ajalukku-media/efa0203_f_vi_03014_k_AVI_Microsoft_DV_PAL.mp4"));
+            pois.add(new PointOfInterest(2, new LatLng(58.380144, 26.7223035), "Raekoja plats", "Raekoda on cool", "http://i.imgur.com/ewugjb2.jpg", "https://s3.eu-central-1.amazonaws.com/aken-ajalukku-media/efa0203_f_vi_03014_k_AVI_Microsoft_DV_PAL.mp4"));
+            pois.add(new PointOfInterest(3, new LatLng(58.3740385, 26.7071558), "Tartu rongijaam", "Choo choo", "http://i.imgur.com/mRFDWKl.jpg", "https://s3.eu-central-1.amazonaws.com/aken-ajalukku-media/x264_aac_faac.mp4"));
+            // Add Journeys associated with newly added pois
+            journeys.add(new Journey(1, Arrays.asList(1, 2), "Tartu in the 90's", "I know journeys", pois));
+            journeys.add(new Journey(2, Arrays.asList(2, 3), "Tallinn 1993", "I have the best journeys", pois));
+            journeys.add(new Journey(3, Arrays.asList(2, 3), "The Baltic Chain", "I have the best journeys", pois));
+            journeys.add(new Journey(4, Arrays.asList(2, 3), "Medieval Tallinn", "I have the best journeys", pois));
+            journeys.add(new Journey(5, Arrays.asList(2, 3), "Laulev Revolutsioon", "I have the best journeys", pois));
+            journeys.add(new Journey(6, Arrays.asList(2, 3), "The Singing Revolution", "I have the best journeys", pois));
+            journeys.add(new Journey(7, Arrays.asList(2, 3), "The Singing Revolution", "I have the best journeys", pois));
+            journeys.add(new Journey(8, Arrays.asList(2, 3), "The Singing Revolution", "I have the best journeys", pois));
+        }
 
     }
 
