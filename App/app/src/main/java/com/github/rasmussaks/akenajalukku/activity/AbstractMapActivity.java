@@ -131,7 +131,10 @@ public abstract class AbstractMapActivity extends AppCompatActivity implements L
         super.onPause();
         visible = false;
         Log.d(TAG, "Paused " + getClass().getSimpleName());
-        LocationServices.FusedLocationApi.removeLocationUpdates(googleApiClient, this);
+        if (googleApiClient != null) {
+            LocationServices.FusedLocationApi.removeLocationUpdates(googleApiClient, this);
+        }
+
     }
 
     @Override
