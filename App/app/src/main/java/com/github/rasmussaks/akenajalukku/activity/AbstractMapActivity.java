@@ -121,8 +121,11 @@ public abstract class AbstractMapActivity extends AppCompatActivity implements L
     protected void onResume() {
         super.onResume();
         visible = true;
-        if (googleApiClient != null && googleApiClient.isConnected()) {
-            setupGoogleApiClient();
+        if (googleApiClient != null) {
+            if (googleApiClient.isConnected())
+                setupGoogleApiClient();
+            else if (!googleApiClient.isConnecting())
+                googleApiClient.connect();
         }
     }
 
