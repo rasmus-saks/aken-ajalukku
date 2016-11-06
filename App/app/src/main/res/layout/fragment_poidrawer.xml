@@ -73,12 +73,24 @@
         android:textSize="24sp"
         android:textStyle="normal|bold" />
 
-    <ImageView
-        android:id="@+id/poi_img"
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="150dp"
-        android:onClick="onVideoImageClick"
-        app:srcCompat="@mipmap/ic_launcher" />
+        android:layout_height="wrap_content">
+
+        <ImageView
+            android:id="@+id/poi_img"
+            android:layout_width="match_parent"
+            android:layout_height="150dp"
+            app:srcCompat="@mipmap/ic_launcher" />
+
+        <ImageView
+            android:id="@+id/imageView"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:layout_centerInParent="true"
+            android:onClick="onVideoImageClick"
+            app:srcCompat="@drawable/ic_play_arrow_white_24dp" />
+    </RelativeLayout>
 
     <TextView
         android:id="@+id/the_story"
