@@ -7,7 +7,7 @@ import android.os.Parcelable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Journey implements Parcelable{
+public class Journey implements Parcelable {
     public static final Creator<Journey> CREATOR = new Creator<Journey>() {
         @Override
         public Journey createFromParcel(Parcel in) {
@@ -39,8 +39,8 @@ public class Journey implements Parcelable{
         id = in.readInt();
         title = in.readString();
         description = in.readString();
-        in.readList(poiIdList,null);
-        initialized=false;
+        in.readList(poiIdList, null);
+        initialized = false;
     }
 
 
@@ -88,17 +88,26 @@ public class Journey implements Parcelable{
         return initialized;
     }
 
-    public void initialize(List<PointOfInterest> allpoi){
+    public void initialize(List<PointOfInterest> allpoi) {
         poiList = new ArrayList<>();
-        for(PointOfInterest poi: allpoi){
-            if(poiIdList.contains(poi.getId())){
-                poiList.add(poi);
+        for (int poiId : poiIdList) {
+            boolean found = false;
+            for (PointOfInterest poi : allpoi) {
+                if (poi.getId() == poiId) {
+                    poiList.add(poi);
+                    found = true;
+                    break;
+                }
+            }
+            if (!found) {
+                throw new RuntimeException("PoI not found while initializing journey");
             }
         }
-        initialized=true;
+
+        initialized = true;
     }
 
-    public PointOfInterest getFirstPoi(){
+    public PointOfInterest getFirstPoi() {
         return poiList.get(0);
     }
 
