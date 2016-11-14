@@ -40,6 +40,7 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
+import com.google.android.gms.maps.model.MapStyleOptions;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.Polyline;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
@@ -136,7 +137,6 @@ public abstract class AbstractMapActivity extends AppCompatActivity implements L
         Log.d(TAG, "Paused " + getClass().getSimpleName());
         if (googleApiClient != null) {
             LocationServices.FusedLocationApi.removeLocationUpdates(googleApiClient, this);
-            googleApiClient.disconnect();
         }
 
     }
@@ -183,6 +183,7 @@ public abstract class AbstractMapActivity extends AppCompatActivity implements L
     public void onMapReady(GoogleMap googleMap) {
         map = googleMap;
         map.setOnMarkerClickListener(this);
+        map.setMapStyle(MapStyleOptions.loadRawResourceStyle(this, R.raw.map_style));
         Log.i(TAG, "Map is ready");
         setupMap();
     }
