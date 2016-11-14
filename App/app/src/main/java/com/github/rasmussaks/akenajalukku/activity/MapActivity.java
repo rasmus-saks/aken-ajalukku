@@ -150,7 +150,6 @@ public class MapActivity extends AbstractMapActivity {
             }
             removePolyline();
             Log.v(TAG, "Setting focused POI");
-            highlightPoiMarker(currentPoi);
         }
     }
 

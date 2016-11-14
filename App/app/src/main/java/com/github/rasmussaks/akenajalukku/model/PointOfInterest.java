@@ -1,8 +1,11 @@
 package com.github.rasmussaks.akenajalukku.model;
 
+import android.content.res.Resources;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import com.github.rasmussaks.akenajalukku.R;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
@@ -82,7 +85,7 @@ public class PointOfInterest implements Parcelable {
     }
 
     public MarkerOptions getMarkerOptions() {
-        return new MarkerOptions().title(title).position(location);
+        return new MarkerOptions().title(title).position(location).icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_mapmarker_walk));
     }
 
     public String getVideoUrl() {

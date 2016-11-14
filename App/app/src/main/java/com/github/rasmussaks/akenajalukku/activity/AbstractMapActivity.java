@@ -306,7 +306,7 @@ public abstract class AbstractMapActivity extends AppCompatActivity implements L
     public void highlightPoiMarker(PointOfInterest poi) {
         if (poi != null) {
             if (poi.getMarker() != null) poi.getMarker().remove();
-            poi.setMarker(map.addMarker(poi.getMarkerOptions().icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE))));
+            poi.setMarker(map.addMarker(poi.getMarkerOptions().icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_mapmarker_play))));
         }
     }
 
