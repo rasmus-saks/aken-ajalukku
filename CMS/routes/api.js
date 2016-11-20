@@ -55,7 +55,26 @@ router.get('/', function (req, res) {
  * Gets all data
  */
 router.get("/data", function (req, res) {
-  res.success(data);
+  var d = {
+    //Here for dev resons. Delete later
+    pois: [{
+      id: 0,
+      title: {EN: "Town hall square", ET: "Raekoja plats"},
+      description: {EN: "Pretty cool square", ET: "Päris jahe ruut"},
+      lat: 58.380144,
+      lon: 26.7223035,
+      video: "https://s3.eu-central-1.amazonaws.com/aken-ajalukku-media/efa0203_f_vi_03014_k_AVI_Microsoft_DV_PAL.mp4",
+      img: "http://i.imgur.com/ewugjb2.jpg"
+    }],
+    journeys: [{
+      id: 0,
+      pois: [0, 1],
+      title: {EN: "Tartu in the 90's", ET: "Tartu 90ndatel"},
+      description: {EN: "I know journeys", ET: "Ma tean teekondi"},
+    }]
+  };
+
+  res.success(d);
 });
 
 /**

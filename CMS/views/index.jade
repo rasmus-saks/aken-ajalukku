@@ -1,5 +1,12 @@
 extends layout
 
 block content
-  h1= title
-  p Welcome to #{title}
+  .main
+    .col-lg-6
+      | Points of Interest
+      .card(v-for="poi in pois")
+        .card-title {{poi.title.EN}}
+    .col-lg-6
+      | Journeys
+      .card(v-for="journey in journeys")
+        .card-title {{journey.title.EN}}
