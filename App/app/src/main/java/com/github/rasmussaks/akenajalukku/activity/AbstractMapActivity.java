@@ -256,11 +256,6 @@ public abstract class AbstractMapActivity extends LocalizedActivity implements L
             for (PointOfInterest poi : pois) {
                 bounds.include(poi.getLocation());
             }
-            if (lastLocation != null && getDistanceBetween(new LatLng(lastLocation.getLatitude(),
-                    lastLocation.getLongitude()), bounds.build().getCenter()) < 1000_000) {
-                bounds.include(new LatLng(lastLocation.getLatitude(),
-                        lastLocation.getLongitude()));
-            }
             update = CameraUpdateFactory.newLatLngBounds(bounds.build(), 200);
 
         }
@@ -327,10 +322,16 @@ public abstract class AbstractMapActivity extends LocalizedActivity implements L
         Log.v(TAG, "Got directions");
         if (response != null) {
             List<LatLng> points = response.getPolylineOptions().getPoints();
-            LatLngBounds.Builder bnds = LatLngBounds.builder().include(new LatLng(lastLocation.getLatitude(), lastLocation.getLongitude()));
+            LatLngBounds.Builder bnds = LatLngBounds.builder();
             for (LatLng point : points) {
                 bnds.include(point);
             }
+            if (lastLocation != null && getDistanceBetween(new LatLng(lastLocation.getLatitude(),
+                    lastLocation.getLongitude()), bnds.build().getCenter()) < 1000_000) {
+                bnds.include(new LatLng(lastLocation.getLatitude(),
+                        lastLocation.getLongitude()));
+            }
+
             map.animateCamera(CameraUpdateFactory.newLatLngBounds(bnds.build(), 200));
             currentPolyline = map.addPolyline(response.getPolylineOptions());
         }
