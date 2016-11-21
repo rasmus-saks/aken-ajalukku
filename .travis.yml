@@ -17,7 +17,9 @@ android:
 before_install:
   - cd $SUBPROJECT
 
-script: ./travis.sh
+script:
+  - chmod 777 ./travis.sh
+  - ./travis.sh
 
 before_cache:
   - rm -f  $HOME/.gradle/caches/modules-2/modules-2.lock
