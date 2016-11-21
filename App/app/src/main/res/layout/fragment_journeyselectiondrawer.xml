@@ -19,7 +19,6 @@
             android:layout_alignParentEnd="true"
             android:layout_alignParentRight="true"
             android:background="@android:color/transparent"
-            android:onClick="onCloseDrawer"
             android:src="@drawable/ic_close_black_36dp" />
 
         <RelativeLayout
