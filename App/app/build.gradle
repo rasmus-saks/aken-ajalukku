@@ -32,13 +32,12 @@ android {
     }
     signingConfigs {
         release {
-            if (System.getenv()["CI"]) { // CI=true is exported by Greenhouse
-                storeFile file(System.getenv()["GH_KEYSTORE_PATH"])
+            storeFile file("release_keystore.jks")
+            if (System.getenv()["CI"]) {
                 storePassword System.getenv()["GH_KEYSTORE_PASSWORD"]
                 keyAlias System.getenv()["GH_KEY_ALIAS"]
                 keyPassword System.getenv()["GH_KEY_PASSWORD"]
             } else if (project.hasProperty("RELEASE_STORE_FILE")) {
-                storeFile file(RELEASE_STORE_FILE)
                 storePassword RELEASE_STORE_PASSWORD
                 keyAlias RELEASE_KEY_ALIAS
                 keyPassword RELEASE_KEY_PASSWORD
