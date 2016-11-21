@@ -1,15 +1,20 @@
 package com.github.rasmussaks.akenajalukku.fragment;
 
+import android.app.Activity;
+import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.ListPreference;
 import android.preference.Preference;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceScreen;
+import android.util.Log;
 
 import com.github.rasmussaks.akenajalukku.R;
 
 public class SettingsFragment extends PreferenceFragment implements SharedPreferences.OnSharedPreferenceChangeListener {
+    private Activity activity;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -17,6 +22,15 @@ public class SettingsFragment extends PreferenceFragment implements SharedPrefer
         getPreferenceScreen().getSharedPreferences().registerOnSharedPreferenceChangeListener(this);
         ListPreference pref = (ListPreference) findPreference("pref_language");
         pref.setSummary(pref.getEntry());
+        Log.d("aken-ajalukku", "Current locale " + activity.getResources().getConfiguration().locale);
+    }
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        if (context instanceof Activity) {
+            activity = (Activity) context;
+        }
     }
 
     @Override
@@ -37,6 +51,7 @@ public class SettingsFragment extends PreferenceFragment implements SharedPrefer
         if (key.equals("pref_language")) {
             ListPreference pref = (ListPreference) findPreference("pref_language");
             pref.setSummary(pref.getEntry());
+            activity.recreate();
         }
     }
 }

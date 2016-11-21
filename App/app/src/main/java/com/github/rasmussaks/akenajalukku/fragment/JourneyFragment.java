@@ -3,7 +3,6 @@ package com.github.rasmussaks.akenajalukku.fragment;
 import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
-import android.support.v4.content.res.ResourcesCompat;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,13 +10,11 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
-import android.widget.ListView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.github.rasmussaks.akenajalukku.R;
 import com.github.rasmussaks.akenajalukku.activity.AbstractMapActivity;
-import com.github.rasmussaks.akenajalukku.activity.MapActivity;
 import com.github.rasmussaks.akenajalukku.model.Data;
 import com.github.rasmussaks.akenajalukku.model.Journey;
 import com.github.rasmussaks.akenajalukku.util.Constants;
@@ -81,10 +78,10 @@ public class JourneyFragment extends DrawerFragment implements View.OnClickListe
 
         if (state == START) {
             journeyButton.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.colorPrimary));
-            journeyButton.setText("START JOURNEY");
+            journeyButton.setText(R.string.start_journey);
         } else if (state == CANCEL) {
             journeyButton.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.colorAccent));
-            journeyButton.setText("CANCEL JOURNEY");
+            journeyButton.setText(R.string.cancel_journey);
             backButton.setVisibility(GONE);
         }
 

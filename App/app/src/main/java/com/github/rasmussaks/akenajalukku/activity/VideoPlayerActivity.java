@@ -4,14 +4,13 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.ActionBar;
-import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
 
 import com.afollestad.easyvideoplayer.EasyVideoCallback;
 import com.afollestad.easyvideoplayer.EasyVideoPlayer;
 import com.github.rasmussaks.akenajalukku.R;
 
-public class VideoPlayerActivity extends AppCompatActivity implements EasyVideoCallback {
+public class VideoPlayerActivity extends LocalizedActivity implements EasyVideoCallback {
     private EasyVideoPlayer player;
 
     @Override
