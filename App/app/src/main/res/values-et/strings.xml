@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Aken DEBUG</string>
+    <string name="action_settings">Seaded</string>
+    <string name="download_text">Laadin alla %1$d</string>
+    <string name="english">English</string>
+    <string name="estonian">Eesti</string>
+    <string name="journey_finished">Teekond läbitud!</string>
+    <string name="language">Keel</string>
+    <string name="notification_detail">Vajuta, et rohkem teada saada</string>
+    <string name="notification_poi_nearby">%s on lähedal!</string>
+    <string name="notification_pois_nearby">%d huvipunkti on lähedal!</string>
+    <string name="pref_clearData">Tühjenda rakenduse andmed</string>
+    <string name="pref_notifications">Teavitused</string>
+    <string name="pref_resetTutorial">Taasta õpetus</string>
+    <string name="pref_wifionly">Laadi alla ainult Wi-Fis</string>
+    <string name="settings">Seaded</string>
+    <string name="the_story">Lugu</string>
+    <string name="title_activity_map">Kaart</string>
+    <string name="title_activity_settings">Seaded</string>
+    <string name="select_journey">Vali teekond</string>
+    <string name="start_journey">ALUSTA TEEKONDA</string>
+    <string name="cancel_journey">PEATA TEEKOND</string>
+</resources>

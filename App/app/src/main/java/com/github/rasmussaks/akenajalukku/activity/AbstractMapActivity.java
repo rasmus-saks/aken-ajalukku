@@ -12,7 +12,6 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.ActionBar;
-import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 
@@ -50,7 +49,7 @@ import java.util.List;
 
 import static com.github.rasmussaks.akenajalukku.util.Constants.TAG;
 
-public abstract class AbstractMapActivity extends AppCompatActivity implements LocationListener,
+public abstract class AbstractMapActivity extends LocalizedActivity implements LocationListener,
         OnMapReadyCallback, GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener, DrawerFragment.DrawerFragmentListener,
         GoogleMap.OnMarkerClickListener, DirectionsTaskListener {
