@@ -7,12 +7,12 @@ android:
   components:
     - platform-tools
     - tools
-	- build-tools-24.0.3
-	- android-25
-	- extra-android-m2repository
-	- extra-google-google_play_services
+    - build-tools-24.0.3
+    - android-25
+    - extra-android-m2repository
+    - extra-google-google_play_services
     - extra-google-m2repository
-	- sys-img-armeabi-v7a-android-23
+    - sys-img-armeabi-v7a-android-23
 
 before_install:
   - cd $SUBPROJECT
