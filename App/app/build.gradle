@@ -9,18 +9,12 @@ android {
         minSdkVersion 16
         targetSdkVersion 24
         def greenhouseBuild = System.getenv()["GREENHOUSE_BUILD"]
-        def travisBuild = System.getenv()["TRAVIS"]
         logger.quiet(System.getenv().toMapString())
         if (greenhouseBuild) {
             logger.quiet("GREENHOUSE_BUILD variable is true")
             def buildNumber = System.getenv()["BUILD_NUMBER"]
             logger.quiet("BUILD_NUMBER: " + buildNumber)
             versionCode = Integer.valueOf(buildNumber)
-        } else if (travisBuild) {
-            logger.quiet("TRAVIS variable is true")
-            def buildNumber = Integer.valueOf(System.getenv()["TRAVIS_BUILD_NUMBER"]) + 100
-            logger.quiet("BUILD_NUMBER: " + buildNumber)
-            versionCode = buildNumber
         } else {
             logger.quiet("GREENHOUSE_BUILD variable is false")
             versionCode 2
