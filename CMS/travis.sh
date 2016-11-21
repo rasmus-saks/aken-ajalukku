@@ -4,3 +4,4 @@ set -ev
 nvm install stable
 nvm use stable
 npm install
+npm test
