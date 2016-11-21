@@ -1,7 +1,7 @@
 extends layout
 
 block content
-  .main
+  .main#index
     .col-lg-6
       | Points of Interest
       .card(v-for="poi in pois")
@@ -10,3 +10,5 @@ block content
       | Journeys
       .card(v-for="journey in journeys")
         .card-title {{journey.title.EN}}
+block scripts
+  script(type="text/javascript" src="/js/index.js")

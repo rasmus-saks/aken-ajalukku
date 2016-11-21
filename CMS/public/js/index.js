@@ -1,5 +1,5 @@
-var view = new Vue({
-  el: '#view',
+var index = new Vue({
+  el: '#index',
   data: {
     'pois': [],
     'journeys': []
