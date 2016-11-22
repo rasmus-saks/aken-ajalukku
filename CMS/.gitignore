@@ -76,3 +76,4 @@ config.js
 
 !.elasticbeanstalk/*.global.yml
 .node-persist
+public/css/style.css
