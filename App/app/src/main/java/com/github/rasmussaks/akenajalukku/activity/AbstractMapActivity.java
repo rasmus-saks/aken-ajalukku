@@ -256,9 +256,6 @@ public abstract class AbstractMapActivity extends LocalizedActivity implements L
             for (PointOfInterest poi : pois) {
                 bounds.include(poi.getLocation());
             }
-            if (lastLocation != null) {
-                bounds.include(new LatLng(lastLocation.getLatitude(), lastLocation.getLongitude()));
-            }
             update = CameraUpdateFactory.newLatLngBounds(bounds.build(), 200);
 
         }
@@ -325,10 +322,16 @@ public abstract class AbstractMapActivity extends LocalizedActivity implements L
         Log.v(TAG, "Got directions");
         if (response != null) {
             List<LatLng> points = response.getPolylineOptions().getPoints();
-            LatLngBounds.Builder bnds = LatLngBounds.builder().include(new LatLng(lastLocation.getLatitude(), lastLocation.getLongitude()));
+            LatLngBounds.Builder bnds = LatLngBounds.builder();
             for (LatLng point : points) {
                 bnds.include(point);
             }
+            if (lastLocation != null && getDistanceBetween(new LatLng(lastLocation.getLatitude(),
+                    lastLocation.getLongitude()), bnds.build().getCenter()) < 1000_000) {
+                bnds.include(new LatLng(lastLocation.getLatitude(),
+                        lastLocation.getLongitude()));
+            }
+
             map.animateCamera(CameraUpdateFactory.newLatLngBounds(bnds.build(), 200));
             currentPolyline = map.addPolyline(response.getPolylineOptions());
         }
@@ -432,10 +435,14 @@ public abstract class AbstractMapActivity extends LocalizedActivity implements L
     }
 
     public float getDistanceTo(PointOfInterest poi) {
+        return getDistanceBetween(new LatLng(getLastLocation().getLatitude(), getLastLocation().getLongitude()), poi.getLocation());
+    }
+
+    public float getDistanceBetween(LatLng loc1, LatLng loc2) {
         float[] results = new float[1];
         if (getLastLocation() == null) return Float.MAX_VALUE;
-        Location.distanceBetween(getLastLocation().getLatitude(), getLastLocation().getLongitude(),
-                poi.getLocation().latitude, poi.getLocation().longitude, results);
+        Location.distanceBetween(loc1.latitude, loc1.longitude,
+                loc2.latitude, loc2.longitude, results);
         return results[0];
     }
 
