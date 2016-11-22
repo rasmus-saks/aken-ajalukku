@@ -8,7 +8,6 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.util.Log;
-import android.view.View;
 
 import com.github.rasmussaks.akenajalukku.R;
 import com.github.rasmussaks.akenajalukku.fragment.JourneyFragment;
@@ -86,9 +85,6 @@ public class MapActivity extends AbstractMapActivity {
         }
     }
 
-    public void onSettingsButtonClick(View view) {
-        openSettings();
-    }
 
     public void onJourneyDetailSelect(int journeyId) {
         openJourneyDetailDrawer(journeyId, JourneyFragment.START);
@@ -101,10 +97,6 @@ public class MapActivity extends AbstractMapActivity {
         startActivity(intent);
     }
 
-    private void openSettings() {
-        Intent intent = new Intent(this, SettingsActivity.class);
-        startActivity(intent);
-    }
 
     @Override
     public void onDirectionsTaskResponse(DirectionsTaskResponse response) {

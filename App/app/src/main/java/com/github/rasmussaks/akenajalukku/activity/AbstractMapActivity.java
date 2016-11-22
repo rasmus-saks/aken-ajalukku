@@ -200,6 +200,15 @@ public abstract class AbstractMapActivity extends LocalizedActivity implements L
         }
     }
 
+    public void onSettingsButtonClick(View view) {
+        openSettings();
+    }
+
+    private void openSettings() {
+        Intent intent = new Intent(this, SettingsActivity.class);
+        startActivity(intent);
+    }
+
     public void setCurrentPoi(PointOfInterest poi) {
         highlightPoiMarker(poi);
         showPoi(poi);
