@@ -20,4 +20,6 @@
     <string name="select_journey">Select a journey</string>
     <string name="start_journey">START JOURNEY</string>
     <string name="cancel_journey">CANCEL JOURNEY</string>
+    <string name="select_journey_button">Select Journey</string>
+    <string name="ongoing_journey_button">Journey Info</string>
 </resources>

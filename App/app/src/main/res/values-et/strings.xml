@@ -21,4 +21,6 @@
     <string name="select_journey">Vali teekond</string>
     <string name="start_journey">ALUSTA TEEKONDA</string>
     <string name="cancel_journey">PEATA TEEKOND</string>
+    <string name="select_journey_button">Vali teekond</string>
+    <string name="ongoing_journey_button">Teekonna Info</string>
 </resources>

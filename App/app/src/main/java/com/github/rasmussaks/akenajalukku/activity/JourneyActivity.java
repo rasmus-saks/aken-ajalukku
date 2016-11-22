@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 import android.widget.Toast;
 
 import com.github.rasmussaks.akenajalukku.R;
@@ -53,6 +54,7 @@ public class JourneyActivity extends AbstractMapActivity {
         } else {
             currentPoi = journey.getPoiList().get(0);
         }
+        ((Button)findViewById(R.id.journey_button)).setText(R.string.ongoing_journey_button);
     }
 
     @Override

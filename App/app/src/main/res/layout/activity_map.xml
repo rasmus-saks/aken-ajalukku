@@ -25,28 +25,37 @@
             android:layout_alignParentTop="true"
             tools:context="com.github.rasmussaks.akenajalukku.activity.MapActivity" />
 
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/journey_button"
+            android:onClick="onJourneyButtonClick"
+            android:layout_marginBottom="25dp"
+            android:backgroundTint="@color/colorPrimary"
+            android:elevation="3dp"
+            android:text="@string/select_journey_button"
+            android:textColor="@color/whiteText"
+            android:textSize="18sp"
+            style="@style/Widget.AppCompat.Button.Colored"
+            android:padding="14dp"
+            android:layout_alignParentBottom="true"
+            android:layout_centerHorizontal="true" />
+
         <ImageButton
             android:id="@+id/settings_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignParentEnd="true"
-            android:layout_alignParentRight="true"
-            android:layout_alignParentTop="true"
-            android:layout_marginEnd="10dp"
-            android:layout_marginRight="10dp"
-            android:layout_marginTop="34dp"
-            android:background="@android:color/transparent"
+            android:layout_marginEnd="19dp"
+            android:layout_marginRight="19dp"
+            android:layout_marginTop="35dp"
+            android:background="@drawable/round_button"
             android:onClick="onSettingsButtonClick"
-            android:src="@drawable/ic_settings_black_36dp" />
-
-        <ImageButton
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            sothree:srcCompat="?android:attr/listChoiceIndicatorSingle"
-            android:id="@+id/journey_button"
-            android:onClick="onJourneyButtonClick"
-            android:layout_alignParentBottom="true"
-            android:layout_centerHorizontal="true" />
+            android:src="@drawable/ic_settings_black_36dp"
+            android:padding="2dp"
+            android:elevation="1dp"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentEnd="true" />
     </RelativeLayout>
 
     <LinearLayout
