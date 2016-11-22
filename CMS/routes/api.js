@@ -106,7 +106,6 @@ router.post("/poi", function (req, res) {
   let i = 0;
   while (findPoiById(i) != null) i++;
   let val = req.body;
-  console.log(val);
   if (!val.title) return res.fail("Title is required");
   if (!val.description) return res.fail("Description is required");
   val.id = i;
