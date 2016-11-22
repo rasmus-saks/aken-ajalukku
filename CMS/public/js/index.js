@@ -5,11 +5,10 @@ var index = new Vue({
     'journeys': []
   },
   created: function () {
-    var context = this;
+    let context = this;
     $.get("/api/data", function (res) {
-      console.log(context);
-      context.$set(context,"journeys",res.journeys);
-      context.$set(context,"pois",res.pois);
+      context.$set(context, "journeys", res.journeys);
+      context.$set(context, "pois", res.pois);
     });
 
   }

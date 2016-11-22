@@ -1,5 +1,43 @@
 extends layout
 
 block content
-  h2 This is the poi edit/creation page depending on the id passed by the server
-  h2 The current id is #{id}
+  .main#poi
+    h2 This is the poi edit/creation page depending on the id passed by the server
+    h2 The current id is #{id}
+    .col-lg-6
+      .card.card-block
+        h3.card-title English
+        .form-group
+          label(for="englishTitle") Title
+          input.form-control#englishTitle(type="text" placeholder="Enter title" v-model="title.EN")
+        .form-group
+          label(for="englishDescription") Description
+          textarea.form-control#englishDescription(rows=5 placeholder="Enter description" v-model="description.EN")
+      .card.card-block
+        h3.card-title Estonian
+        .form-group
+          label(for="estonianTitle") Title
+          input.form-control#estonianTitle(type="text" placeholder="Enter title" v-model="title.ET")
+        .form-group
+          label(for="estonianDescription") Description
+          textarea.form-control#estonianDescription(rows=5 placeholder="Enter description" v-model="description.ET")
+    .col-lg-6
+      .card.card-block
+        h3.card-title Other data
+        .form-group
+          label(for="latitude") Latitude
+          input.form-control#latitude(type="number" placeholder="Enter latitude" v-model="lat")
+        .form-group
+          label(for="longitude") Longitude
+          input.form-control#longitude(type="number" placeholder="Enter longitude" v-model="lon")
+        .form-group
+          label(for="img") Image url
+          input.form-control#img(type="text" placeholder="ex: http://www.image.com/image" v-model="img")
+        .form-group
+          label(for="video") Video url
+          input.form-control#video(type="text" placeholder="ex: http://www.video.com/video" v-model="video")
+      .btn.btn-block.btn-success(v-on:click="submitPoi") Submit
+block scripts
+  script.
+    poi_id = "#{id}";
+  script(type="text/javascript" src="/js/poi.js")
