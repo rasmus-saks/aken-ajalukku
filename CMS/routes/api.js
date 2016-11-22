@@ -63,7 +63,7 @@ router.get("/data", function (req, res) {
  * Gets a PoI by its ID
  */
 router.get("/poi", function (req, res) {
-  let poi = findPoiById(req.body.id);
+  let poi = findPoiById(req.query.id);
   if (!poi) return res.fail("Invalid PoI ID");
   res.success(poi);
 });
@@ -73,7 +73,7 @@ router.get("/poi", function (req, res) {
  * Gets a journey by its ID
  */
 router.get("/journey", function (req, res) {
-  let journey = findJourneyById(req.body.id);
+  let journey = findJourneyById(req.query.id);
   if (!journey) return res.fail("Invalid journey ID");
   res.success(journey);
 });

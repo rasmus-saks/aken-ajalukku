@@ -83,9 +83,8 @@ describe("PoI API", function () {
         .expect(400, done);
     });
     it("should get an existing PoI", function (done) {
-      apiRequest("get", "/api/poi")
+      apiRequest("get", "/api/poi?id=0")
         .expect(200)
-        .send({id: 0})
         .end(function (err, res) {
           res.body.should.be.eql({title: {EN: "hi2", ET: "hei2"}, description: {EN: "bye", ET: "nägemist"}, id: 0});
           done(err);
@@ -161,9 +160,8 @@ describe("Journey API", function () {
         .expect(400, done);
     });
     it("should get an existing journey", function (done) {
-      apiRequest("get", "/api/journey")
+      apiRequest("get", "/api/journey?id=0")
         .expect(200)
-        .send({id: 0})
         .end(function (err, res) {
           res.body.should.be.eql({
             title: {EN: "hi2", ET: "hei2"},

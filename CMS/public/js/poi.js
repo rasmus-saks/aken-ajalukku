@@ -1,18 +1,18 @@
 var poi = new Vue({
   el: '#poi',
   data: {
-    id: 0,
-    title: {EN: "Town hall square", ET: "Raekoja plats"},
-    description: {EN: "Pretty cool square", ET: "Päris jahe ruut"},
-    lat: 58.380144,
-    lon: 26.7223035,
-    video: "https://s3.eu-central-1.amazonaws.com/aken-ajalukku-media/efa0203_f_vi_03014_k_AVI_Microsoft_DV_PAL.mp4",
-    img: "http://i.imgur.com/ewugjb2.jpg"
+    id: null,
+    title: {EN: null, ET: null},
+    description: {EN: null, ET: null},
+    lat: null,
+    lon: null,
+    video: null,
+    img: null
   },
   created: function () {
     let context = this;
     if (poi_id != -1) {
-      $.get("/api/poi", {id: poi_id}, function (res) {
+      $.get({url: "/api/poi", data: {id: poi_id}, success: function (res) {
         context.$set(context, "id", res.id);
         context.$set(context, "title", res.title);
         context.$set(context, "description", res.description);
@@ -20,7 +20,7 @@ var poi = new Vue({
         context.$set(context, "lon", res.lon);
         context.$set(context, "video", res.video);
         context.$set(context, "img", res.img);
-      });
+      }});
     }
 
 
