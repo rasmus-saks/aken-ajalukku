@@ -45,9 +45,9 @@
             android:id="@+id/settings_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="19dp"
-            android:layout_marginRight="19dp"
-            android:layout_marginTop="35dp"
+            android:layout_marginEnd="18dp"
+            android:layout_marginRight="18dp"
+            android:layout_marginTop="51dp"
             android:background="@drawable/round_button"
             android:onClick="onSettingsButtonClick"
             android:src="@drawable/ic_settings_black_36dp"
@@ -56,6 +56,20 @@
             android:layout_alignParentTop="true"
             android:layout_alignParentRight="true"
             android:layout_alignParentEnd="true" />
+
+        <ImageButton
+            android:id="@+id/location_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="31dp"
+            android:background="@drawable/round_button"
+            android:onClick="onSettingsButtonClick"
+            android:src="@drawable/ic_my_location_black_36dp"
+            android:padding="2dp"
+            android:elevation="1dp"
+            android:layout_below="@+id/settings_button"
+            android:layout_alignLeft="@+id/settings_button"
+            android:layout_alignStart="@+id/settings_button" />
     </RelativeLayout>
 
     <LinearLayout
