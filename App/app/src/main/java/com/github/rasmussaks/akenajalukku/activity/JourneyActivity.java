@@ -1,7 +1,6 @@
 package com.github.rasmussaks.akenajalukku.activity;
 
 import android.content.Intent;
-import android.location.Location;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.util.Log;
@@ -57,7 +56,6 @@ public class JourneyActivity extends AbstractMapActivity {
         ((Button)findViewById(R.id.journey_button)).setText(R.string.ongoing_journey_button);
     }
 
-    @Override
     public void setCurrentPoi(PointOfInterest poi) {
         resetPoiMarker(currentPoi);
         currentPoi = poi;
@@ -85,7 +83,6 @@ public class JourneyActivity extends AbstractMapActivity {
     @Override
     public void onMapLoaded() {
         setCurrentPoi(currentPoi);
-        checkCloseness();
     }
 
     @Override
@@ -98,15 +95,8 @@ public class JourneyActivity extends AbstractMapActivity {
         openJourneyDetailDrawer(journey.getId(), JourneyFragment.CANCEL);
     }
 
-
     @Override
-    public void onLocationChanged(Location location) {
-        super.onLocationChanged(location);
-        checkCloseness();
-        Log.d(TAG, "wtf location changed");
-    }
-
-    private void checkCloseness() {
+    protected void highlightClosePois() {
         if (isCloseTo(currentPoi)) {
             highlightPoiMarker(currentPoi);
             closeToCurrent = true;
@@ -127,7 +117,7 @@ public class JourneyActivity extends AbstractMapActivity {
                 finish();
             } else {
                 setCurrentPoi(journey.getPoiList().get(idx + 1));
-                checkCloseness();
+                highlightClosePois();
             }
         }
     }

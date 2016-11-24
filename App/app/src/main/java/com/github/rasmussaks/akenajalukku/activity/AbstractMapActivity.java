@@ -24,6 +24,7 @@ import com.github.rasmussaks.akenajalukku.layout.NoTouchSlidingUpPanelLayout;
 import com.github.rasmussaks.akenajalukku.model.Data;
 import com.github.rasmussaks.akenajalukku.model.PointOfInterest;
 import com.github.rasmussaks.akenajalukku.util.Constants;
+import com.github.rasmussaks.akenajalukku.util.DirectionsTask;
 import com.github.rasmussaks.akenajalukku.util.DirectionsTaskListener;
 import com.github.rasmussaks.akenajalukku.util.DirectionsTaskResponse;
 import com.google.android.gms.common.ConnectionResult;
@@ -63,6 +64,8 @@ public abstract class AbstractMapActivity extends LocalizedActivity implements L
     private Location lastLocation;
     private Polyline currentPolyline;
     private SlidingUpPanelLayout drawerLayout;
+    private List<PointOfInterest> highlightedPois = new ArrayList<>();
+    private PointOfInterest currentDirections;
 
     public static boolean isVisible() {
         return visible;
@@ -153,6 +156,13 @@ public abstract class AbstractMapActivity extends LocalizedActivity implements L
     protected void onStop() {
         super.onStop();
         Log.d(TAG, "Stopped " + getClass().getSimpleName());
+        highlightedPois.clear();
+        for (PointOfInterest poi : getPois()) {
+            if (poi.getMarker() != null) {
+                poi.getMarker().remove();
+                poi.setMarker(null);
+            }
+        }
 
     }
 
@@ -211,10 +221,6 @@ public abstract class AbstractMapActivity extends LocalizedActivity implements L
         startActivity(intent);
     }
 
-    public void setCurrentPoi(PointOfInterest poi) {
-        highlightPoiMarker(poi);
-        showPoi(poi);
-    }
 
     @SuppressWarnings("MissingPermission")
     void setupMap() {
@@ -233,6 +239,7 @@ public abstract class AbstractMapActivity extends LocalizedActivity implements L
             @Override
             public void onMapLoaded() {
                 AbstractMapActivity.this.onMapLoaded();
+                highlightClosePois();
             }
         });
     }
@@ -260,9 +267,6 @@ public abstract class AbstractMapActivity extends LocalizedActivity implements L
             if (intentPois != null) {
                 pois = intentPois;
                 intentPois = null;
-                if (pois.size() == 1) {
-                    setCurrentPoi(Data.instance.getPoiById(pois.get(0).getId()));
-                }
             }
             for (PointOfInterest poi : pois) {
                 bounds.include(poi.getLocation());
@@ -323,17 +327,32 @@ public abstract class AbstractMapActivity extends LocalizedActivity implements L
         lastLocation = LocationServices.FusedLocationApi.getLastLocation(googleApiClient);
     }
 
+    public void showDirectionsTo(PointOfInterest poi) {
+        if (getLastLocation() != null) {
+            currentDirections = poi;
+            new DirectionsTask(this, this).execute(
+                    new LatLng(getLastLocation().getLatitude(), getLastLocation().getLongitude()),
+                    poi.getLocation()
+            );
+        }
+    }
+
     public void highlightPoiMarker(PointOfInterest poi) {
         if (poi != null) {
+            if (highlightedPois.contains(poi))
+                return; //Don't want to update markers when not necessary
             if (poi.getMarker() != null) poi.getMarker().remove();
             poi.setMarker(map.addMarker(poi.getMarkerOptions().icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_mapmarker_play))));
+            highlightedPois.add(poi);
         }
     }
 
     public void resetPoiMarker(PointOfInterest poi) {
         if (poi != null) {
+            if (poi.getMarker() != null && !highlightedPois.contains(poi)) return;
             if (poi.getMarker() != null) poi.getMarker().remove();
             poi.setMarker(map.addMarker(poi.getMarkerOptions()));
+            highlightedPois.remove(poi);
         }
     }
 
@@ -366,6 +385,7 @@ public abstract class AbstractMapActivity extends LocalizedActivity implements L
         POIDrawerFragment fragment = new POIDrawerFragment();
         Bundle bundle = new Bundle();
         bundle.putParcelable("poi", poi);
+        bundle.putBoolean("close", isCloseTo(poi));
         fragment.setDrawerFragmentListener(this);
         fragment.setArguments(bundle);
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
@@ -436,6 +456,7 @@ public abstract class AbstractMapActivity extends LocalizedActivity implements L
     public void onLocationChanged(Location location) {
         lastLocation = location;
         Log.v(TAG, "Location changed");
+        highlightClosePois();
     }
 
     @Override
@@ -467,6 +488,23 @@ public abstract class AbstractMapActivity extends LocalizedActivity implements L
         return getDistanceTo(poi) <= Constants.GEOFENCE_RADIUS_IN_METERS;
     }
 
+    protected void highlightClosePois() {
+        for (PointOfInterest poi : getPois()) {
+            if (isCloseTo(poi)) {
+                highlightPoiMarker(poi);
+                if (poi == currentDirections) {
+                    if (currentPolyline != null) {
+                        currentPolyline.remove();
+                        currentPolyline = null;
+                    }
+                    currentDirections = null;
+                }
+            } else {
+                resetPoiMarker(poi);
+            }
+        }
+    }
+
     @Override
     public void onBackPressed() {
         if (drawerLayout.getPanelState() == SlidingUpPanelLayout.PanelState.EXPANDED) {
@@ -478,5 +516,15 @@ public abstract class AbstractMapActivity extends LocalizedActivity implements L
 
     public void onResetLocationButtonClick(View view) {
         resetCameraOnUser();
+    }
+
+    public List<PointOfInterest> getHighlightedPois() {
+        return highlightedPois;
+    }
+
+    public void onDirectionsTextClick(View view) {
+        POIDrawerFragment fragment = (POIDrawerFragment) getSupportFragmentManager().findFragmentById(R.id.drawer_container);
+        showDirectionsTo(fragment.getPoi());
+        onCloseDrawer();
     }
 }

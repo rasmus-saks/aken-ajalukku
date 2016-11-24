@@ -21,6 +21,7 @@ public class POIDrawerFragment extends DrawerFragment implements View.OnClickLis
     private TextView description;
     private ImageButton downloadButton;
     private TextView downloadText;
+    private boolean isClose;
 
     public POIDrawerFragment() {
         // Required empty public constructor
@@ -29,8 +30,10 @@ public class POIDrawerFragment extends DrawerFragment implements View.OnClickLis
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            poi = getArguments().getParcelable("poi");
+        Bundle arguments = getArguments();
+        if (arguments != null) {
+            poi = arguments.getParcelable("poi");
+            isClose = arguments.getBoolean("close");
         }
     }
 
@@ -54,6 +57,13 @@ public class POIDrawerFragment extends DrawerFragment implements View.OnClickLis
         downloadButton.setOnClickListener(this);
         downloadText = (TextView) view.findViewById(R.id.download_text);
         Glide.with(this).load(poi.getImageUrl()).centerCrop().into(img);
+        if (isClose) {
+            view.findViewById(R.id.playButton).setVisibility(View.VISIBLE);
+            view.findViewById(R.id.directionsText).setVisibility(View.GONE);
+        } else {
+            view.findViewById(R.id.playButton).setVisibility(View.GONE);
+            view.findViewById(R.id.directionsText).setVisibility(View.VISIBLE);
+        }
         return view;
     }
 

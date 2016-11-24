@@ -22,4 +22,5 @@
     <string name="cancel_journey">CANCEL JOURNEY</string>
     <string name="select_journey_button">Select Journey</string>
     <string name="ongoing_journey_button">Journey Info</string>
+    <string name="press_to_get_directions">Press to get directions</string>
 </resources>

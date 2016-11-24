@@ -23,4 +23,5 @@
     <string name="cancel_journey">PEATA TEEKOND</string>
     <string name="select_journey_button">Vali teekond</string>
     <string name="ongoing_journey_button">Teekonna Info</string>
+    <string name="press_to_get_directions">Vajuta juhiste saamiseks</string>
 </resources>
