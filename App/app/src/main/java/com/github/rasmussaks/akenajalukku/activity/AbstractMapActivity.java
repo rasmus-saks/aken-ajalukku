@@ -194,6 +194,8 @@ public abstract class AbstractMapActivity extends LocalizedActivity implements L
             case REQUEST_TO_SETUP_MAP:
                 if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     locationEnabled = true;
+                } else {
+                    findViewById(R.id.location_button).setVisibility(View.GONE); //Hide location button if user hasn't given location permission
                 }
                 loadMap();
                 break;
@@ -279,6 +281,13 @@ public abstract class AbstractMapActivity extends LocalizedActivity implements L
             } else {
                 map.moveCamera(update);
             }
+        }
+    }
+
+    public void resetCameraOnUser() {
+        if (lastLocation != null && locationEnabled) {
+            CameraUpdate update = CameraUpdateFactory.newLatLngZoom(new LatLng(lastLocation.getLatitude(), lastLocation.getLongitude()), 15);
+            map.animateCamera(update);
         }
     }
 
@@ -465,5 +474,9 @@ public abstract class AbstractMapActivity extends LocalizedActivity implements L
         } else {
             finish();
         }
+    }
+
+    public void onResetLocationButtonClick(View view) {
+        resetCameraOnUser();
     }
 }
