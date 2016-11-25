@@ -7,22 +7,26 @@ var poi = new Vue({
     lat: null,
     lon: null,
     video: null,
-    img: null
+    img: null,
+    clicked: false,
+    delMessage: "Delete"
   },
   created: function () {
     let context = this;
     if (poi_id != -1) {
       $.get({
         url: "/api/poi", data: {id: poi_id}, success: function (res) {
-          context.$set(context, "id", res.id);
-          context.$set(context, "title", res.title);
-          context.$set(context, "description", res.description);
-          context.$set(context, "lat", res.lat);
-          context.$set(context, "lon", res.lon);
-          context.$set(context, "video", res.video);
-          context.$set(context, "img", res.img);
+          Vue.set(context, "id", res.id);
+          Vue.set(context, "title", res.title);
+          Vue.set(context, "description", res.description);
+          Vue.set(context, "lat", res.lat);
+          Vue.set(context, "lon", res.lon);
+          Vue.set(context, "video", res.video);
+          Vue.set(context, "img", res.img);
         }
       });
+    } else {
+      Vue.set(context, "id", poi_id);
     }
 
 
@@ -77,6 +81,25 @@ var poi = new Vue({
             //TODO Should redirect back to /
           }
         });
+      }
+    },
+    del: function () {
+      if (this.clicked) {
+        $.ajax({
+          url: '/api/poi',
+          type: 'DELETE',
+          data: JSON.stringify({
+            id: this.id,
+          }),
+          dataType: 'json',
+          contentType: 'application/json',
+          success: function (result) {
+            //TODO Should redirect back to /
+          }
+        });
+      } else {
+        Vue.set(this, "delMessage", "Click again to DELETE");
+        Vue.set(this, "clicked", true);
       }
     }
   },

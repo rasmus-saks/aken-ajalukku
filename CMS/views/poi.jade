@@ -38,6 +38,7 @@ block content
           label(for="video") Video url
           input.form-control#video(type="text" placeholder="ex: http://www.video.com/video" v-model="video")
       .btn.btn-block.btn-success(v-on:click="submitPoi") Submit
+      .btn.btn-block.btn-danger(v-if="id!=-1" v-on:click="del") {{delMessage}}
 block scripts
   script.
     poi_id = "#{id}";
