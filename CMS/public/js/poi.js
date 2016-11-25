@@ -1,32 +1,3 @@
-/**function initialize() {
-  var loc =
-  var myOptions = {
-    zoom: 8,
-    center: loc,
-    mapTypeId: google.maps.MapTypeId.ROADMAP
-  };
-  var map = new google.maps.Map(document.getElementById("map_canvas"), myOptions);
-  var marker = new google.maps.Marker({
-    draggable: true,
-    position: loc,
-    map: map,
-    title: "Your location"
-  });
-  google.maps.event.addListener(marker, 'dragend', function (event) {
-    Vue.set(poi, "lat", event.latLng.lat());
-    Vue.set(poi, "lot", event.latLng.lng());
-  });
-
-  google.maps.event.addListener(map, 'click', function (event) {
-    Vue.set(poi, "lat", event.latLng.lat());
-    Vue.set(poi, "lot", event.latLng.lng());
-    marker.setPosition(event.latLng);
-  });
-
-}**/
-// Based on solution from http://stackoverflow.com/questions/35053426/place-marker-on-click-google-maps-javascript-api
-
-
 var poi = new Vue({
   el: '#poi',
   data: {
@@ -120,6 +91,8 @@ var poi = new Vue({
 
 });
 
+
+// Based on solution from http://stackoverflow.com/questions/35053426/place-marker-on-click-google-maps-javascript-api
 
 var myLatlng = new google.maps.LatLng(58.3776252, 26.7290063);
 if (poi.lat != null && poi.lon != null) {
