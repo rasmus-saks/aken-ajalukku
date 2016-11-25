@@ -4,7 +4,7 @@ block content
   .main#index
     .col-lg-6
       | Points of Interest
-      .card(v-for="poi in pois")
+      a.card.list-el(v-for="poi in pois" v-bind:href="'/poi/'+poi.id")
         .card-title {{poi.title.EN}}
     .col-lg-6
       | Journeys
