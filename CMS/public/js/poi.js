@@ -34,16 +34,6 @@ var poi = new Vue({
   methods: {
     submitPoi: function () {
       if (poi_id == -1) {
-        /**$.post("/api/poi", JSON.stringify({
-          title: this.title,
-          description: this.description,
-          lat: this.lat,
-          lon: this.lon,
-          video: this.video,
-          img: this.img
-        }),function (result) {
-          //TODO Should redirect back to /
-        }, 'json');**/
         $.ajax({
           url: '/api/poi',
           type: 'POST',
@@ -58,7 +48,8 @@ var poi = new Vue({
           dataType: 'json',
           contentType: 'application/json',
           success: function (result) {
-            //TODO Should redirect back to /
+            window.location.href = '/';
+            //TODO Display errors
           }
         });
       } else {
@@ -78,7 +69,8 @@ var poi = new Vue({
           dataType: 'json',
           contentType: 'application/json',
           success: function (result) {
-            //TODO Should redirect back to /
+            window.location.href = '/';
+            //TODO Display errors
           }
         });
       }
@@ -94,7 +86,8 @@ var poi = new Vue({
           dataType: 'json',
           contentType: 'application/json',
           success: function (result) {
-            //TODO Should redirect back to /
+            window.location.href = '/';
+            //TODO Display errors
           }
         });
       } else {
