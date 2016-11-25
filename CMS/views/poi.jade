@@ -26,10 +26,11 @@ block content
         h3.card-title Other data
         .form-group
           label(for="latitude") Latitude
-          input.form-control#latitude(type="number" placeholder="Enter latitude" v-model="lat")
+          input.form-control#latitude(type="text" placeholder="Enter latitude" v-model="lat")
         .form-group
           label(for="longitude") Longitude
-          input.form-control#longitude(type="number" placeholder="Enter longitude" v-model="lon")
+          input.form-control#longitude(type="text" placeholder="Enter longitude" v-model="lon")
+        div#map_canvas
         .form-group
           label(for="img") Image url
           input.form-control#img(type="text" placeholder="ex: http://www.image.com/image" v-model="img")
@@ -40,4 +41,5 @@ block content
 block scripts
   script.
     poi_id = "#{id}";
+  script(src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB9CMwHHUZuJ8cPJZ0M1ON23AFIjM2sJ9k")
   script(type="text/javascript" src="/js/poi.js")
