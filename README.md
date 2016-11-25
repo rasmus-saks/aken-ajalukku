@@ -1,4 +1,4 @@
-# Aken Ajalukku
+# Aken Ajalukku [![Build Status](https://travis-ci.org/rasmussaks/aken-ajalukku.svg?branch=master)](https://travis-ci.org/rasmussaks/aken-ajalukku)
 Aken Ajalukku is an Android application targeted at tourists and/or students.
 
 The application helps tourists experience historic events in 90’s Estonia by showing information and 
