@@ -9,38 +9,47 @@ block content
         h3.card-title English
         .form-group
           label(for="englishTitle") Title
-          input.form-control#englishTitle(type="text" placeholder="Enter title" v-model="title.EN")
+          input.form-control#englishTitle(v-validate.initial="title.EN" data-rules="required" type="text" placeholder="Enter title" v-model="title.EN")
+          p.input-error(v-if="errors.has('title.EN')") {{ errors.first('title.EN') }}
         .form-group
           label(for="englishDescription") Description
-          textarea.form-control#englishDescription(rows=5 placeholder="Enter description" v-model="description.EN")
+          textarea.form-control#englishDescription(v-validate.initial="description.EN" data-rules="required" rows=5 placeholder="Enter description" v-model="description.EN")
+          p.input-error(v-if="errors.has('description.EN')") {{ errors.first('description.EN') }}
       .card.card-block
         h3.card-title Estonian
         .form-group
           label(for="estonianTitle") Title
-          input.form-control#estonianTitle(type="text" placeholder="Enter title" v-model="title.ET")
+          input.form-control#estonianTitle(v-validate.initial="title.ET" data-rules="required" type="text" placeholder="Enter title" v-model="title.ET")
+          p.input-error(v-if="errors.has('title.ET')") {{ errors.first('title.ET') }}
         .form-group
           label(for="estonianDescription") Description
-          textarea.form-control#estonianDescription(rows=5 placeholder="Enter description" v-model="description.ET")
+          textarea.form-control#estonianDescription(v-validate.initial="description.ET" data-rules="required" rows=5 placeholder="Enter description" v-model="description.ET")
+          p.input-error(v-if="errors.has('description.ET')") {{ errors.first('description.ET') }}
     .col-lg-6
       .card.card-block
         h3.card-title Other data
         .form-group
           label(for="latitude") Latitude
-          input.form-control#latitude(type="text" placeholder="Enter latitude" v-model="lat")
+          input.form-control#latitude(v-validate.initial="lat" data-rules="required|decimal:20" type="text" placeholder="Enter latitude" v-model="lat")
+          p.input-error(v-if="errors.has('lat')") {{ errors.first('lat') }}
         .form-group
           label(for="longitude") Longitude
-          input.form-control#longitude(type="text" placeholder="Enter longitude" v-model="lon")
+          input.form-control#longitude(v-validate.initial="lon" data-rules="required|decimal:20" type="text" placeholder="Enter longitude" v-model="lon")
+          p.input-error(v-if="errors.has('lon')") {{ errors.first('lon') }}
         div#map_canvas
         .form-group
           label(for="img") Image url
-          input.form-control#img(type="text" placeholder="ex: http://www.image.com/image" v-model="img")
+          input.form-control#img(v-validate.initial="img" data-rules="required" type="text" placeholder="ex: http://www.image.com/image" v-model="img")
+          p.input-error(v-if="errors.has('img')") {{ errors.first('img') }}
         .form-group
           label(for="video") Video url
-          input.form-control#video(type="text" placeholder="ex: http://www.video.com/video" v-model="video")
+          input.form-control#video(v-validate.initial="video" data-rules="required" type="text" placeholder="ex: http://www.video.com/video" v-model="video")
+          p.input-error(v-if="errors.has('video')") {{ errors.first('video') }}
       .btn.btn-block.btn-success(v-on:click="submitPoi") Submit
       .btn.btn-block.btn-danger(v-if="id!=-1" v-on:click="del") {{delMessage}}
 block scripts
   script.
     poi_id = "#{id}";
   script(src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB9CMwHHUZuJ8cPJZ0M1ON23AFIjM2sJ9k")
+  script(type="text/javascript" src="/js/vee-validate.min.js")
   script(type="text/javascript" src="/js/poi.js")

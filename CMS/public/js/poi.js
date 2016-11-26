@@ -1,3 +1,5 @@
+Vue.use(VeeValidate);
+
 var poi = new Vue({
   el: '#poi',
   data: {
@@ -33,6 +35,10 @@ var poi = new Vue({
   },
   methods: {
     submitPoi: function () {
+      this.$validator.validateAll();
+      if (this.errors.any()) {
+        return
+      }
       if (poi_id == -1) {
         $.ajax({
           url: '/api/poi',
