@@ -151,6 +151,13 @@ public abstract class AbstractMapActivity extends LocalizedActivity implements L
         if (googleApiClient != null) {
             googleApiClient.connect();
         }
+        highlightedPois.clear();
+        for (PointOfInterest poi : getPois()) {
+            if (poi.getMarker() != null) {
+                poi.getMarker().remove();
+                poi.setMarker(null);
+            }
+        }
         if (map != null) {
             for (PointOfInterest poi : getPois()) {
                 resetPoiMarker(poi);
@@ -162,13 +169,6 @@ public abstract class AbstractMapActivity extends LocalizedActivity implements L
     protected void onStop() {
         super.onStop();
         Log.d(TAG, "Stopped " + getClass().getSimpleName());
-        highlightedPois.clear();
-        for (PointOfInterest poi : getPois()) {
-            if (poi.getMarker() != null) {
-                poi.getMarker().remove();
-                poi.setMarker(null);
-            }
-        }
 
     }
 
@@ -233,8 +233,13 @@ public abstract class AbstractMapActivity extends LocalizedActivity implements L
         if (locationEnabled) map.setMyLocationEnabled(true);
         map.setPadding(0, getResources().getDimensionPixelSize(R.dimen.mapview_top_padding), 0, 0);
         map.getUiSettings().setMyLocationButtonEnabled(false);
-        for (PointOfInterest poi : Data.instance.getPois()) {
-            if (poi.getMarker() != null) poi.getMarker().remove();
+        Log.d(TAG, "setupMap");
+        highlightedPois.clear();
+        for (PointOfInterest poi : getPois()) {
+            if (poi.getMarker() != null) {
+                poi.getMarker().remove();
+                poi.setMarker(null);
+            }
         }
         for (PointOfInterest poi : getPois()) {
             resetPoiMarker(poi);
