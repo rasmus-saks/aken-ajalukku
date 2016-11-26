@@ -23,4 +23,8 @@
     <string name="select_journey_button">Select Journey</string>
     <string name="ongoing_journey_button">Journey Info</string>
     <string name="press_to_get_directions">Press to get directions</string>
+    <string name="next_point_of_interest">Next Point of Interest:</string>
+    <string name="press_to_continue_journey">PRESS TO CONTINUE JOURNEY</string>
+    <string name="journey_finished_text">JOURNEY FINISHED</string>
+    <string name="click_to_return">CLICK TO RETURN</string>
 </resources>

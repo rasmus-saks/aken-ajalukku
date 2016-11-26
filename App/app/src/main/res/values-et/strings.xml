@@ -24,4 +24,8 @@
     <string name="select_journey_button">Vali teekond</string>
     <string name="ongoing_journey_button">Teekonna Info</string>
     <string name="press_to_get_directions">Vajuta juhiste saamiseks</string>
+    <string name="journey_finished_text">TEEKOND LÄBITUD</string>
+    <string name="next_point_of_interest">Järgmine huvipunkt:</string>
+    <string name="click_to_return">VAJUTA NAASMISEKS</string>
+    <string name="press_to_continue_journey">VAJUTA TEEKONNA JÄTKAMISEKS</string>
 </resources>

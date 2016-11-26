@@ -11,6 +11,7 @@ import com.afollestad.easyvideoplayer.EasyVideoPlayer;
 import com.github.rasmussaks.akenajalukku.R;
 
 public class VideoPlayerActivity extends LocalizedActivity implements EasyVideoCallback {
+    public static int ACTIVITY_RESULT_FINISHED = 1;
     private EasyVideoPlayer player;
 
     @Override
@@ -54,6 +55,7 @@ public class VideoPlayerActivity extends LocalizedActivity implements EasyVideoC
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == android.R.id.home) {
+            setResult(ACTIVITY_RESULT_FINISHED);
             finish();
             return true;
         }

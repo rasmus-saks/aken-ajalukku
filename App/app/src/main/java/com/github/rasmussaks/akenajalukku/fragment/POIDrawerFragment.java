@@ -22,6 +22,10 @@ public class POIDrawerFragment extends DrawerFragment implements View.OnClickLis
     private ImageButton downloadButton;
     private TextView downloadText;
     private boolean isClose;
+    private boolean hasNext;
+    private boolean journey;
+    private View playButton;
+    private String nextTitle;
 
     public POIDrawerFragment() {
         // Required empty public constructor
@@ -34,6 +38,9 @@ public class POIDrawerFragment extends DrawerFragment implements View.OnClickLis
         if (arguments != null) {
             poi = arguments.getParcelable("poi");
             isClose = arguments.getBoolean("close");
+            journey = arguments.getBoolean("journey");
+            hasNext = arguments.getBoolean("hasNext");
+            nextTitle = arguments.getString("nextTitle");
         }
     }
 
@@ -56,13 +63,19 @@ public class POIDrawerFragment extends DrawerFragment implements View.OnClickLis
         downloadButton = (ImageButton) view.findViewById(R.id.download_button);
         downloadButton.setOnClickListener(this);
         downloadText = (TextView) view.findViewById(R.id.download_text);
+        playButton = view.findViewById(R.id.playButton);
         Glide.with(this).load(poi.getImageUrl()).centerCrop().into(img);
-        if (isClose) {
-            view.findViewById(R.id.playButton).setVisibility(View.VISIBLE);
+        if (journey) {
+            playButton.setVisibility(View.VISIBLE);
             view.findViewById(R.id.directionsText).setVisibility(View.GONE);
         } else {
-            view.findViewById(R.id.playButton).setVisibility(View.GONE);
-            view.findViewById(R.id.directionsText).setVisibility(View.VISIBLE);
+            if (isClose) {
+                playButton.setVisibility(View.VISIBLE);
+                view.findViewById(R.id.directionsText).setVisibility(View.GONE);
+            } else {
+                playButton.setVisibility(View.GONE);
+                view.findViewById(R.id.directionsText).setVisibility(View.VISIBLE);
+            }
         }
         return view;
     }
@@ -76,6 +89,17 @@ public class POIDrawerFragment extends DrawerFragment implements View.OnClickLis
             downloadButton.setVisibility(View.GONE);
             downloadText.setVisibility(View.VISIBLE);
             downloadText.setText(String.format(getString(R.string.download_text), 1) + "%");
+        }
+    }
+
+    public void onVideoPlayerResult() {
+        if (getView() == null || !journey) return;
+        playButton.setVisibility(View.GONE);
+        if (hasNext) {
+            getView().findViewById(R.id.journey_next).setVisibility(View.VISIBLE);
+            ((TextView) getView().findViewById(R.id.journey_next_title)).setText(nextTitle);
+        } else {
+            getView().findViewById(R.id.journey_end).setVisibility(View.VISIBLE);
         }
     }
 }

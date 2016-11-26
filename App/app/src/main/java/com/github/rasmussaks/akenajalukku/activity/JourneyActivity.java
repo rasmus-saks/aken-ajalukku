@@ -3,6 +3,8 @@ package com.github.rasmussaks.akenajalukku.activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -10,6 +12,7 @@ import android.widget.Toast;
 
 import com.github.rasmussaks.akenajalukku.R;
 import com.github.rasmussaks.akenajalukku.fragment.JourneyFragment;
+import com.github.rasmussaks.akenajalukku.fragment.POIDrawerFragment;
 import com.github.rasmussaks.akenajalukku.model.Data;
 import com.github.rasmussaks.akenajalukku.model.Journey;
 import com.github.rasmussaks.akenajalukku.model.PointOfInterest;
@@ -54,7 +57,7 @@ public class JourneyActivity extends AbstractMapActivity {
         } else {
             currentPoi = journey.getPoiList().get(0);
         }
-        ((Button)findViewById(R.id.journey_button)).setText(R.string.ongoing_journey_button);
+        ((Button) findViewById(R.id.journey_button)).setText(R.string.ongoing_journey_button);
     }
 
     public void setCurrentPoi(PointOfInterest poi) {
@@ -117,6 +120,14 @@ public class JourneyActivity extends AbstractMapActivity {
     }
 
     @Override
+    public void onVideoPlayerResult() {
+        Fragment f = getSupportFragmentManager().findFragmentById(R.id.drawer_container);
+        if (f != null && f instanceof POIDrawerFragment) {
+            ((POIDrawerFragment) f).onVideoPlayerResult();
+        }
+    }
+
+    @Override
     public void onCloseDrawer() {
         super.onCloseDrawer();
         if (moveToNext) {
@@ -133,11 +144,36 @@ public class JourneyActivity extends AbstractMapActivity {
     }
 
     @Override
+    public void openPoiDetailDrawer(PointOfInterest poi) {
+        POIDrawerFragment fragment = new POIDrawerFragment();
+        Bundle bundle = new Bundle();
+        bundle.putParcelable("poi", poi);
+        bundle.putBoolean("close", isCloseTo(poi));
+        bundle.putBoolean("journey", true);
+        bundle.putBoolean("hasNext", currentPoi != getPois().get(getPois().size() - 1));
+        bundle.putString("nextTitle", currentPoi != getPois().get(getPois().size() - 1) ? getPois().get(getPois().indexOf(currentPoi) + 1).getTitle() : "");
+        fragment.setDrawerFragmentListener(this);
+        fragment.setArguments(bundle);
+        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+        transaction.replace(R.id.drawer_container, fragment);
+        transaction.commit();
+        getDrawerLayout().setPanelState(SlidingUpPanelLayout.PanelState.EXPANDED);
+    }
+
+    @Override
     public boolean onMarkerClick(Marker marker) {
         if (closeToCurrent && marker.equals(currentPoi.getMarker())) {
             openPoiDetailDrawer(currentPoi);
             moveToNext = true;
         }
         return true;
+    }
+
+    public void onJourneyNextClick(View view) {
+        onCloseDrawer();
+    }
+
+    public void onJourneyFinishedClick(View view) {
+        onCloseDrawer();
     }
 }

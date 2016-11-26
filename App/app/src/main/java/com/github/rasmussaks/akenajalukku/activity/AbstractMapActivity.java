@@ -56,6 +56,7 @@ public abstract class AbstractMapActivity extends LocalizedActivity implements L
         GoogleMap.OnMarkerClickListener, DirectionsTaskListener {
 
     private static final int REQUEST_TO_SETUP_MAP = 1;
+    private static final int VIDEO_PLAYER_RESULT = 1;
     private static boolean visible;
     private boolean locationEnabled = false;
     private GoogleMap map;
@@ -149,6 +150,11 @@ public abstract class AbstractMapActivity extends LocalizedActivity implements L
         Log.d(TAG, "Started " + getClass().getSimpleName());
         if (googleApiClient != null) {
             googleApiClient.connect();
+        }
+        if (map != null) {
+            for (PointOfInterest poi : getPois()) {
+                resetPoiMarker(poi);
+            }
         }
     }
 
@@ -254,6 +260,18 @@ public abstract class AbstractMapActivity extends LocalizedActivity implements L
                     .build();
             googleApiClient.connect();
         }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == VIDEO_PLAYER_RESULT) {
+            onVideoPlayerResult();
+        }
+    }
+
+    public void onVideoPlayerResult() {
+
     }
 
     @SuppressWarnings("MissingPermission")
@@ -463,7 +481,7 @@ public abstract class AbstractMapActivity extends LocalizedActivity implements L
         Intent intent = new Intent(this, VideoPlayerActivity.class);
         intent.putExtra("url", fragment.getPoi().getVideoUrl());
         intent.putExtra("title", fragment.getPoi().getTitle());
-        startActivity(intent);
+        startActivityForResult(intent, VIDEO_PLAYER_RESULT);
     }
 
     public float getDistanceTo(PointOfInterest poi) {
