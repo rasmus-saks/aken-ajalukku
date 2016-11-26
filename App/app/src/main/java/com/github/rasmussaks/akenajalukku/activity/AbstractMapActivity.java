@@ -306,12 +306,6 @@ public abstract class AbstractMapActivity extends LocalizedActivity implements L
         }
     }
 
-    public void showPoi(PointOfInterest poi) {
-        if (poi == null) resetCamera(true);
-        else {
-            map.animateCamera(CameraUpdateFactory.newLatLngZoom(poi.getLocation(), 15.5f));
-        }
-    }
 
     protected LocationRequest createLocationRequest() {
         LocationRequest mLocationRequest = new LocationRequest();
@@ -509,6 +503,11 @@ public abstract class AbstractMapActivity extends LocalizedActivity implements L
     public void onBackPressed() {
         if (drawerLayout.getPanelState() == SlidingUpPanelLayout.PanelState.EXPANDED) {
             onCloseDrawer();
+        } else if (currentPolyline != null) {
+            currentPolyline.remove();
+            currentPolyline = null;
+            currentDirections = null;
+            resetCamera(true);
         } else {
             finish();
         }

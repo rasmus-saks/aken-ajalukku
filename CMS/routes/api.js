@@ -138,6 +138,9 @@ router.put("/poi", function (req, res) {
 router.delete("/poi", function (req, res) {
   let poi = findPoiById(req.body.id);
   if (!poi) return res.fail("Invalid PoI ID");
+  for (let j of data.journeys) {
+    if (j.pois.indexOf(poi.id) != -1) return res.fail("PoI is part of journey ID " + j.id);
+  }
   data.pois = data.pois.filter(p => p.id != poi.id);
   storage.set("data", data)
     .then(() => res.success(true));
@@ -157,6 +160,9 @@ router.post("/journey", function (req, res) {
   if (!val.title) return res.fail("Title is required");
   if (!val.description) return res.fail("Description is required");
   if (!val.pois) return res.fail("PoI list is required");
+  for (let pId of val.pois) {
+    if (findPoiById(pId) == null) return res.fail("Invalid PoI ID " + pId);
+  }
   val.id = i;
   data.journeys.push(val);
   storage.set("data", data)
@@ -171,6 +177,11 @@ router.post("/journey", function (req, res) {
 router.put("/journey", function (req, res) {
   let journey = findJourneyById(req.body.id);
   if (!journey) return res.fail("Invalid journey ID");
+  if (req.body.pois) {
+    for (let pId of req.body.pois) {
+      if (findPoiById(pId) == null) return res.fail("Invalid PoI ID " + pId);
+    }
+  }
   for (let k of Object.keys(req.body)) {
     journey[k] = req.body[k]
   }

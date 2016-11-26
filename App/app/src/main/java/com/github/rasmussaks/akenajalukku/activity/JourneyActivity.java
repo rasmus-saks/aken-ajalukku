@@ -17,6 +17,7 @@ import com.github.rasmussaks.akenajalukku.util.Constants;
 import com.github.rasmussaks.akenajalukku.util.DirectionsTask;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
+import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 
 import java.util.ArrayList;
 
@@ -77,6 +78,15 @@ public class JourneyActivity extends AbstractMapActivity {
             removePolyline();
             Log.v(TAG, "Setting focused POI");
             highlightPoiMarker(currentPoi);
+        }
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (getDrawerLayout().getPanelState() == SlidingUpPanelLayout.PanelState.EXPANDED) {
+            onCloseDrawer();
+        } else {
+            finish();
         }
     }
 

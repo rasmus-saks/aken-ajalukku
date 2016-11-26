@@ -14,7 +14,6 @@ import com.github.rasmussaks.akenajalukku.manager.GeofenceManager;
 import com.github.rasmussaks.akenajalukku.model.PointOfInterest;
 import com.github.rasmussaks.akenajalukku.util.Constants;
 import com.google.android.gms.maps.model.Marker;
-import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 
 public class MapActivity extends AbstractMapActivity {
 
@@ -61,15 +60,6 @@ public class MapActivity extends AbstractMapActivity {
         startActivity(intent);
     }
 
-
-    @Override
-    public void onBackPressed() {
-        if (getDrawerLayout().getPanelState() == SlidingUpPanelLayout.PanelState.EXPANDED) {
-            onCloseDrawer();
-        } else {
-            finish();
-        }
-    }
 
     @Override
     protected void onResume() {
