@@ -24,7 +24,6 @@ import org.junit.runner.RunWith;
 
 import java.util.ArrayList;
 
-import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertTrue;
 import static org.hamcrest.core.IsNull.notNullValue;
 import static org.junit.Assert.assertEquals;
@@ -70,7 +69,6 @@ public class ApplicationTest {
         context.startActivity(intent);
         allowPermissionsIfNeeded();
         // Wait for the app to appear
-        assertFalse("Google Play services is out of date", device.wait(Until.hasObject(By.textContains("unless you update Google Play services")), 5000));
 
         assertTrue("Failed to find map", device.wait(Until.hasObject(By.res(APP_PACKAGE, "map")), 30000));
     }
@@ -91,7 +89,6 @@ public class ApplicationTest {
     @Test
     public void testMarkerDetails() throws Exception {
         UiObject marker = device.findObject(new UiSelector().descriptionContains("Raekoja plats"));
-        marker.click();
         marker.click();
         assertTrue("Failed to find the marker detailed view", device.wait(Until.hasObject(By.res(APP_PACKAGE, "the_story")), 10000));
     }
