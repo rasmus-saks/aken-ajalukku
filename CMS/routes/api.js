@@ -23,10 +23,20 @@ let data = {
   }]
 };
 
-
+let lastIndex = {
+  poi: -1,
+  journey: -1
+};
 storage.init()
   .then(() => storage.get("data"))
-  .then(value => data = value || {pois: [], journeys: []});
+  .then(value => {
+    data = value || {pois: [], journeys: []};
+    return storage.get("lastIndex")
+  })
+  .then(value => {
+    lastIndex = value || {poi: -1, journey: -1}
+  });
+
 
 router.use(function (req, res, next) {
   res.success = function (data) {
@@ -103,14 +113,13 @@ router.delete("/data", function (req, res) {
  * Returns the newly added PoI (includes the assigned ID)
  */
 router.post("/poi", function (req, res) {
-  let i = 0;
-  while (findPoiById(i) != null) i++;
   let val = req.body;
   if (!val.title) return res.fail("Title is required");
   if (!val.description) return res.fail("Description is required");
-  val.id = i;
+  val.id = ++lastIndex.poi;
   data.pois.push(val);
   storage.set("data", data)
+    .then(() => storage.set("lastIndex", lastIndex))
     .then(() => res.success(val));
 });
 
@@ -154,8 +163,6 @@ router.delete("/poi", function (req, res) {
  * Returns the newly added journey (with its assigned ID)
  */
 router.post("/journey", function (req, res) {
-  let i = 0;
-  while (findJourneyById(i) != null) i++;
   let val = req.body;
   if (!val.title) return res.fail("Title is required");
   if (!val.description) return res.fail("Description is required");
@@ -163,9 +170,10 @@ router.post("/journey", function (req, res) {
   for (let pId of val.pois) {
     if (findPoiById(pId) == null) return res.fail("Invalid PoI ID " + pId);
   }
-  val.id = i;
+  val.id = ++lastIndex.journey;
   data.journeys.push(val);
   storage.set("data", data)
+    .then(() => storage.set("lastIndex", lastIndex))
     .then(() => res.success(val));
 });
 

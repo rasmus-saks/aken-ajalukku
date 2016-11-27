@@ -1,8 +1,9 @@
-var request = require('supertest');
-var express = require('express');
-var app = require('../main');
-var should = require("should");
-var auth = "Basic dXNlcm5hbWU6cGFzc3dvcmQ=";
+const request = require('supertest');
+const express = require('express');
+const app = require('../main');
+const should = require("should");
+const storage = require("node-persist");
+const auth = "Basic dXNlcm5hbWU6cGFzc3dvcmQ=";
 
 function apiRequest(method, path) {
   let r = request(app);
@@ -12,6 +13,12 @@ function apiRequest(method, path) {
     .expect("Content-Type", /json/);
 
 }
+//Reset lastIndex from any possible previous tests
+storage.initSync();
+storage.clearSync();
+
+
+
 describe("PoI API", function () {
   describe("DELETE /api/data", function () {
     it("should require authorization", function (done) {
