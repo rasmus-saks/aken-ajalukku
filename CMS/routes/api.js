@@ -79,6 +79,16 @@ router.get("/poi", function (req, res) {
 });
 
 /**
+ * GET /api/pois
+ * Gets all PoIs
+ */
+router.get("/pois", function (req, res) {
+  res.success(data.pois);
+});
+
+
+
+/**
  * GET /api/journey
  * Gets a journey by its ID
  */
@@ -86,6 +96,14 @@ router.get("/journey", function (req, res) {
   let journey = findJourneyById(req.query.id);
   if (!journey) return res.fail("Invalid journey ID");
   res.success(journey);
+});
+
+/**
+ * GET /api/journeys
+ * Gets all journeys
+ */
+router.get("/journeys", function (req, res) {
+  res.success(data.journeys);
 });
 
 
