@@ -1,5 +1,11 @@
 extends layout
 
 block content
-  h2 This is the journey edit/creation page depending on the id passed by the server
-  h2 The current id is #{id}
+  .main#journey
+    h2 This is the journey edit/creation page depending on the id passed by the server
+    h2 The current id is #{id}
+block scripts
+  script.
+    poi_id = "#{id}";
+  script(type = "text/javascript" src = "/js/vee-validate.min.js")
+  script(type = "text/javascript" src = "/js/journey.js")
