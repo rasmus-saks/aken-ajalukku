@@ -490,12 +490,12 @@ public abstract class AbstractMapActivity extends LocalizedActivity implements L
     }
 
     public float getDistanceTo(PointOfInterest poi) {
+        if (getLastLocation() == null) return Float.MAX_VALUE;
         return getDistanceBetween(new LatLng(getLastLocation().getLatitude(), getLastLocation().getLongitude()), poi.getLocation());
     }
 
     public float getDistanceBetween(LatLng loc1, LatLng loc2) {
         float[] results = new float[1];
-        if (getLastLocation() == null) return Float.MAX_VALUE;
         Location.distanceBetween(loc1.latitude, loc1.longitude,
                 loc2.latitude, loc2.longitude, results);
         return results[0];
