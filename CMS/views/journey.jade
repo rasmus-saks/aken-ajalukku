@@ -4,8 +4,35 @@ block content
   .main#journey
     h2 This is the journey edit/creation page depending on the id passed by the server
     h2 The current id is #{id}
+    .col-lg-6
+      .card.card-block
+        h3.card-title English
+        .form-group
+          label(for="englishTitle") Title
+          input.form-control#englishTitle(v-validate.initial="title.EN" data-rules="required" type="text" placeholder="Enter title" v-model="title.EN")
+          p.input-error(v-if="errors.has('title.EN')") {{ errors.first('title.EN') }}
+        .form-group
+          label(for="englishDescription") Description
+          textarea.form-control#englishDescription(v-validate.initial="description.EN" data-rules="required" rows=5 placeholder="Enter description" v-model="description.EN")
+          p.input-error(v-if="errors.has('description.EN')") {{ errors.first('description.EN') }}
+      .card.card-block
+        h3.card-title Estonian
+        .form-group
+          label(for="estonianTitle") Title
+          input.form-control#estonianTitle(v-validate.initial="title.ET" data-rules="required" type="text" placeholder="Enter title" v-model="title.ET")
+          p.input-error(v-if="errors.has('title.ET')") {{ errors.first('title.ET') }}
+        .form-group
+          label(for="estonianDescription") Description
+          textarea.form-control#estonianDescription(v-validate.initial="description.ET" data-rules="required" rows=5 placeholder="Enter description" v-model="description.ET")
+          p.input-error(v-if="errors.has('description.ET')") {{ errors.first('description.ET') }}
+    .col-lg-6
+      .card.card-block
+        h3.card-title Order points of interest
+        //TODO add interaction
+      .btn.btn-block.btn-success(v-on:click="submitJourney") Submit
+      .btn.btn-block.btn-danger(v-if="id!=-1" v-on:click="del") {{delMessage}}
 block scripts
   script.
-    poi_id = "#{id}";
+    journey_id = "#{id}";
   script(type = "text/javascript" src = "/js/vee-validate.min.js")
   script(type = "text/javascript" src = "/js/journey.js")
