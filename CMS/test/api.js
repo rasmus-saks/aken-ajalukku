@@ -98,6 +98,17 @@ describe("PoI API", function () {
         });
     });
   });
+  describe("GET /api/pois", function () {
+    it("should get all pois", function (done) {
+      request(app)
+        .get("/api/pois")
+        .expect(200)
+        .end(function (err, res) {
+          res.body.should.be.eql([{title: {EN: "hi2", ET: "hei2"}, description: {EN: "bye", ET: "nägemist"}, id: 0}]);
+          done(err);
+        })
+    })
+  });
 });
 describe("Journey API", function () {
   describe("POST /api/journey", function () {
@@ -197,6 +208,21 @@ describe("Journey API", function () {
         });
     });
   });
-
+  describe("GET /api/journeys", function () {
+    it("should get all journeys", function (done) {
+      request(app)
+        .get("/api/journeys")
+        .expect(200)
+        .end(function (err, res) {
+          res.body.should.be.eql([{
+            title: {EN: "hi2", ET: "hei2"},
+            description: {EN: "bye", ET: "nägemist"},
+            id: 0,
+            pois: [0, 1]
+          }]);
+          done(err);
+        })
+    })
+  });
 
 });
