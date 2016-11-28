@@ -9,7 +9,8 @@ block content
         .card-title {{poi.title.EN}}
     .col-lg-6
       | Journeys
-      .card(v-for="journey in journeys")
+      a.card.list-el(href="/journey/new") Add new Journey
+      a.card.list-el(v-for="journey in journeys" v-bind:href="'/journey/'+journey.id")
         .card-title {{journey.title.EN}}
 block scripts
   script(type="text/javascript" src="/js/index.js")
