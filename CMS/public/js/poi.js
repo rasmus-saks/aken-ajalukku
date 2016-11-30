@@ -57,7 +57,6 @@ var poi = new Vue({
           contentType: 'application/json',
           success: function (result) {
             window.location.href = '/';
-
           },
           error: function (result) {
             miniToastr.error(jQuery.parseJSON(result.responseText).error, "Error");
@@ -81,7 +80,6 @@ var poi = new Vue({
           contentType: 'application/json',
           success: function (result) {
             window.location.href = '/';
-            //TODO Display errors
           },
           error: function (result) {
             miniToastr.error(jQuery.parseJSON(result.responseText).error, "Error");
@@ -101,7 +99,6 @@ var poi = new Vue({
           contentType: 'application/json',
           success: function (result) {
             window.location.href = '/';
-            //TODO Display errors
           },
           error: function (result) {
             miniToastr.error(jQuery.parseJSON(result.responseText).error, "Error");
