@@ -3,5 +3,11 @@
  */
 module.exports = {
   username: "username",
-  password: "password"
+  password: "password",
+
+  //Fill in details from AWS and S3
+  accessKeyId: "",
+  secretAccessKey: "",
+  region: "",
+  bucket: ""
 };
