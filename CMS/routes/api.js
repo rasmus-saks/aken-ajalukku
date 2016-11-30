@@ -2,8 +2,7 @@ const express = require('express');
 const router = express.Router();
 const config = require("../config");
 const debug = require('debug')('CMS:api');
-const storage = require("node-persist");
-
+const storage = require("../storage");
 let data = {
   //Example data just to show the structure. Will be overwritten with persisted data shortly
   pois: [{
