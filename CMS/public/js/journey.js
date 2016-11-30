@@ -1,4 +1,5 @@
 Vue.use(VeeValidate);
+miniToastr.init();
 
 var journey = new Vue({
   el: '#journey',
@@ -52,6 +53,9 @@ var journey = new Vue({
           success: function (result) {
             window.location.href = '/';
             //TODO Display errors
+          },
+          error: function (result) {
+            miniToastr.error(jQuery.parseJSON(result.responseText).error, "Error");
           }
         });
       } else {
@@ -69,6 +73,9 @@ var journey = new Vue({
           success: function (result) {
             window.location.href = '/';
             //TODO Display errors
+          },
+          error: function (result) {
+            miniToastr.error(jQuery.parseJSON(result.responseText).error, "Error");
           }
         });
       }
@@ -86,6 +93,9 @@ var journey = new Vue({
           success: function (result) {
             window.location.href = '/';
             //TODO Display errors
+          },
+          error: function (result) {
+            miniToastr.error(jQuery.parseJSON(result.responseText).error, "Error");
           }
         });
       } else {

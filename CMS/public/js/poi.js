@@ -1,4 +1,5 @@
 Vue.use(VeeValidate);
+miniToastr.init();
 
 var poi = new Vue({
   el: '#poi',
@@ -39,6 +40,7 @@ var poi = new Vue({
       if (this.errors.any()) {
         return
       }
+      let context = this;
       if (poi_id == -1) {
         $.ajax({
           url: '/api/poi',
@@ -55,7 +57,10 @@ var poi = new Vue({
           contentType: 'application/json',
           success: function (result) {
             window.location.href = '/';
-            //TODO Display errors
+
+          },
+          error: function (result) {
+            miniToastr.error(jQuery.parseJSON(result.responseText).error, "Error");
           }
         });
       } else {
@@ -77,6 +82,9 @@ var poi = new Vue({
           success: function (result) {
             window.location.href = '/';
             //TODO Display errors
+          },
+          error: function (result) {
+            miniToastr.error(jQuery.parseJSON(result.responseText).error, "Error");
           }
         });
       }
@@ -94,6 +102,9 @@ var poi = new Vue({
           success: function (result) {
             window.location.href = '/';
             //TODO Display errors
+          },
+          error: function (result) {
+            miniToastr.error(jQuery.parseJSON(result.responseText).error, "Error");
           }
         });
       } else {
