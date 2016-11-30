@@ -1,10 +1,10 @@
-if (global.testing) {
+const config = require("./config");
+if (global.testing || !config.accessKeyId || !config.secretAccessKey || !config.bucket || !config.region) {
   module.exports = require("node-persist");
   return;
 }
 const s3 = require("s3");
 const Promise = require("bluebird");
-const config = require("./config");
 const fs = require("fs");
 const tempfile = ".s3temp.json";
 const AWS = require('aws-sdk');
