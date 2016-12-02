@@ -57,9 +57,15 @@ describe("PoI API", function () {
     it("should add a new PoI", function (done) {
       apiRequest("post", "/api/poi")
         .expect(200)
-        .send({title: {EN: "hi", ET: "hei"}, description: {EN: "bye", ET: "nägemist"}})
+        .send({title: {EN: "hi", ET: "hei"}, description: {EN: "bye", ET: "nägemist"}, lat: 58.380144, lon: 26.7223035})
         .end(function (err, res) {
-          res.body.should.be.eql({title: {EN: "hi", ET: "hei"}, description: {EN: "bye", ET: "nägemist"}, id: 0});
+          res.body.should.be.eql({
+            title: {EN: "hi", ET: "hei"},
+            description: {EN: "bye", ET: "nägemist"},
+            id: 0,
+            lat: 58.380144,
+            lon: 26.7223035
+          });
           done(err);
         });
     });
@@ -79,7 +85,13 @@ describe("PoI API", function () {
         .expect(200)
         .send({id: 0, title: {EN: "hi2", ET: "hei2"}})
         .end(function (err, res) {
-          res.body.should.be.eql({title: {EN: "hi2", ET: "hei2"}, description: {EN: "bye", ET: "nägemist"}, id: 0});
+          res.body.should.be.eql({
+            title: {EN: "hi2", ET: "hei2"},
+            description: {EN: "bye", ET: "nägemist"},
+            id: 0,
+            lat: 58.380144,
+            lon: 26.7223035
+          });
           done(err);
         });
     });
@@ -94,7 +106,13 @@ describe("PoI API", function () {
       apiRequest("get", "/api/poi?id=0")
         .expect(200)
         .end(function (err, res) {
-          res.body.should.be.eql({title: {EN: "hi2", ET: "hei2"}, description: {EN: "bye", ET: "nägemist"}, id: 0});
+          res.body.should.be.eql({
+            title: {EN: "hi2", ET: "hei2"},
+            description: {EN: "bye", ET: "nägemist"},
+            id: 0,
+            lat: 58.380144,
+            lon: 26.7223035
+          });
           done(err);
         });
     });
@@ -105,7 +123,13 @@ describe("PoI API", function () {
         .get("/api/pois")
         .expect(200)
         .end(function (err, res) {
-          res.body.should.be.eql([{title: {EN: "hi2", ET: "hei2"}, description: {EN: "bye", ET: "nägemist"}, id: 0}]);
+          res.body.should.be.eql([{
+            title: {EN: "hi2", ET: "hei2"},
+            description: {EN: "bye", ET: "nägemist"},
+            id: 0,
+            lat: 58.380144,
+            lon: 26.7223035
+          }]);
           done(err);
         })
     })
@@ -140,14 +164,19 @@ describe("Journey API", function () {
     it("should add a new journey", function (done) {
       apiRequest("post", "/api/poi")
         .expect(200)
-        .send({title: {EN: "hi2", ET: "hei2"}, description: {EN: "bye2", ET: "nägemist2"}})
+        .send({
+          title: {EN: "hi2", ET: "hei2"},
+          description: {EN: "bye2", ET: "nägemist2"},
+          lat: 58.360144,
+          lon: 26.7223035
+        })
         .end(function (err, res) {
           if (err) done(err);
           apiRequest("post", "/api/journey")
             .expect(200)
             .send({title: {EN: "hi", ET: "hei"}, description: {EN: "bye", ET: "nägemist"}, pois: [0, 1]})
             .end(function (err, res) {
-              res.body.should.be.eql({
+              res.body.should.containEql({
                 title: {EN: "hi", ET: "hei"},
                 description: {EN: "bye", ET: "nägemist"},
                 pois: [0, 1],
@@ -179,7 +208,7 @@ describe("Journey API", function () {
         .expect(200)
         .send({id: 0, title: {EN: "hi2", ET: "hei2"}})
         .end(function (err, res) {
-          res.body.should.be.eql({
+          res.body.should.containEql({
             title: {EN: "hi2", ET: "hei2"},
             description: {EN: "bye", ET: "nägemist"},
             id: 0,
@@ -199,7 +228,7 @@ describe("Journey API", function () {
       apiRequest("get", "/api/journey?id=0")
         .expect(200)
         .end(function (err, res) {
-          res.body.should.be.eql({
+          res.body.should.containEql({
             title: {EN: "hi2", ET: "hei2"},
             description: {EN: "bye", ET: "nägemist"},
             id: 0,
@@ -215,12 +244,13 @@ describe("Journey API", function () {
         .get("/api/journeys")
         .expect(200)
         .end(function (err, res) {
-          res.body.should.be.eql([{
+          res.body.length.should.equal(1);
+          res.body[0].should.containEql({
             title: {EN: "hi2", ET: "hei2"},
             description: {EN: "bye", ET: "nägemist"},
             id: 0,
             pois: [0, 1]
-          }]);
+          });
           done(err);
         })
     })
