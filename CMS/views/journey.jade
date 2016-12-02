@@ -26,11 +26,16 @@ block content
           p.input-error(v-if="errors.has('description.ET')") {{ errors.first('description.ET') }}
     .col-lg-6
       .card.card-block
-        h3.card-title Order points of interest
+        h3.card-title Points of Interest
+        .poi-element(v-for="list_poi in pois") {{list_poi.title.EN}}
+          a.btn.poi-button.trash.fa.fa-trash-o.fa-lg(v-on:click="removeFromPois(list_poi.id)" href="#")
+          a.btn.poi-button.fa.fa-arrow-down(href="#")
+          a.btn.poi-button.fa.fa-arrow-up(href="#")
+          .clearfix
         .dropdown
           button.btn.btn-block.btn-secondary.dropdown-toggleid#addPoiButton(type="button"  data-toggle="dropdown" aria-haspopup="true" aria-expanded="false") Add PoI
           .dropdown-menu(aria-labelledby="addPoiButton")
-            a.dropdown-item(v-for="poi in allpois" href="#") {{poi.title.EN}}
+            a.dropdown-item(v-for="poi in allpois" v-on:click="addPoi(poi.id)" href="#") {{poi.title.EN}}
       .btn.btn-block.btn-success(v-on:click="submitJourney") Submit
       .btn.btn-block.btn-danger(v-if="id!=-1" v-on:click="del") {{delMessage}}
 block scripts

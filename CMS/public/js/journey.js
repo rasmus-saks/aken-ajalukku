@@ -1,6 +1,7 @@
 Vue.use(VeeValidate);
 miniToastr.init();
 
+
 var journey = new Vue({
   el: '#journey',
   data: {
@@ -10,26 +11,27 @@ var journey = new Vue({
     description: {EN: null, ET: null},
     clicked: false,
     delMessage: "Delete",
-    allpois: []
+    allpois: [],
   },
   created: function () {
     let context = this;
-    if (journey_id != -1) {
-      $.get({
-        url: "/api/journey", data: {id: journey_id}, success: function (res) {
-          Vue.set(context, "id", res.id);
-          Vue.set(context, "pois", res.pois);
-          Vue.set(context, "title", res.title);
-          Vue.set(context, "description", res.description);
-        }
-      });
-    } else {
-      Vue.set(context, "id", journey_id);
-
-    }
     $.get({
       url: "/api/pois", data: {id: journey_id}, success: function (res) {
-        Vue.set(context, "allpois", res)
+        Vue.set(context, "allpois", res);
+        if (journey_id != -1) {
+          $.get({
+            url: "/api/journey", data: {id: journey_id}, success: function (res) {
+              Vue.set(context, "id", res.id);
+              Vue.set(context, "title", res.title);
+              Vue.set(context, "description", res.description);
+              context.addIdsToPois(res.pois)
+
+            }
+          });
+        } else {
+          Vue.set(context, "id", journey_id);
+
+        }
       }
     });
   },
@@ -44,7 +46,7 @@ var journey = new Vue({
           url: '/api/journey',
           type: 'POST',
           data: JSON.stringify({
-            pois: this.pois,
+            pois: this.poisToIdArray(),
             title: this.title,
             description: this.description,
           }),
@@ -63,7 +65,7 @@ var journey = new Vue({
           type: 'PUT',
           data: JSON.stringify({
             id: this.id,
-            pois: this.pois,
+            pois: this.poisToIdArray(),
             title: this.title,
             description: this.description,
           }),
@@ -98,6 +100,53 @@ var journey = new Vue({
       } else {
         Vue.set(this, "delMessage", "Click again to DELETE");
         Vue.set(this, "clicked", true);
+      }
+    },
+    findPoi: function (id) {
+      for (let poi of this.allpois) {
+        if (poi.id == id) {
+          return poi;
+        }
+      }
+      miniToastr.error("Something went wrong. Contact administrator.", "Error");
+    },
+    addPoi: function (id) {
+      if (!this.isInPois(id)) {
+        this.pois.push(this.findPoi(id));
+      } else {
+        miniToastr.error("PoI can only be in a journey once", "Error");
+      }
+
+
+    },
+    isInPois: function (id) {
+      for (let poi of this.pois) {
+        if (poi.id == id) {
+          return true;
+        }
+      }
+      return false;
+    },
+    getPoiIndexById: function (id) {
+      for (var i = 0; i < this.pois.length; i++) {
+        if (this.pois[i].id == id) {
+          return i;
+        }
+      }
+    },
+    removeFromPois: function (id) {
+      this.pois.splice(this.getPoiIndexById(id), 1);
+    },
+    poisToIdArray: function () {
+      let ret = [];
+      for (let poi of this.pois) {
+        ret.push(poi.id)
+      }
+      return ret
+    },
+    addIdsToPois: function (idarray) {
+      for (let id of idarray) {
+        this.addPoi(id)
       }
     }
   }
