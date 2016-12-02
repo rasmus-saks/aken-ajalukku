@@ -3,6 +3,13 @@ const router = express.Router();
 const config = require("../config");
 const debug = require('debug')('CMS:api');
 const storage = require("../storage");
+let mapsClient = null;
+if (config.googleMapsApiKey) {
+  mapsClient = require('@google/maps').createClient({
+    key: config.googleMapsApiKey,
+    Promise: Promise
+  });
+}
 let data = {
   //Example data just to show the structure. Will be overwritten with persisted data shortly
   pois: [{
@@ -19,6 +26,7 @@ let data = {
     pois: [0, 1],
     title: {EN: "Tartu in the 90's", ET: "Tartu 90ndatel"},
     description: {EN: "I know journeys", ET: "Ma tean teekondi"},
+    distance: 123456.45 //Meters
   }]
 };
 
@@ -86,7 +94,6 @@ router.get("/pois", function (req, res) {
 });
 
 
-
 /**
  * GET /api/journey
  * Gets a journey by its ID
@@ -133,6 +140,8 @@ router.post("/poi", function (req, res) {
   let val = req.body;
   if (!val.title) return res.fail("Title is required");
   if (!val.description) return res.fail("Description is required");
+  if (!val.lat) return res.fail("Latitude is required");
+  if (!val.lon) return res.fail("Longitude is required");
   val.id = ++lastIndex.poi;
   data.pois.push(val);
   storage.set("data", data)
@@ -184,14 +193,43 @@ router.post("/journey", function (req, res) {
   if (!val.title) return res.fail("Title is required");
   if (!val.description) return res.fail("Description is required");
   if (!val.pois) return res.fail("PoI list is required");
+  if (val.pois.length < 2) return res.fail("PoI list must have at least two PoIs");
   for (let pId of val.pois) {
     if (findPoiById(pId) == null) return res.fail("Invalid PoI ID " + pId);
   }
+
   val.id = ++lastIndex.journey;
-  data.journeys.push(val);
-  storage.set("data", data)
+  let mapsPromise = Promise.resolve(null);
+  if (mapsClient) {
+    let waypoints = [];
+    for (let i = 1; i < val.pois.length - 1; i++) {
+      let poi = findPoiById(val.pois[i]);
+      waypoints.push(poi.lat + "," + poi.lon);
+    }
+    let origin = findPoiById(val.pois[0]);
+    let dest = findPoiById(val.pois[val.pois.length - 1]);
+    let opts = {
+      origin: origin.lat + "," + origin.lon,
+      destination: dest.lat + "," + dest.lon,
+      mode: 'walking'
+    };
+    if (waypoints.length > 0) {
+      opts["waypoints"] = waypoints.join("|");
+    }
+    mapsPromise = mapsClient.directions(opts).asPromise()
+  }
+  mapsPromise
+    .then((response) => {
+      if (response) val.distance = response.json.routes[0].legs.map(v => v.distance.value).reduce((s, v) => s + v, 0);
+      data.journeys.push(val);
+      return storage.set("data", data);
+    })
     .then(() => storage.set("lastIndex", lastIndex))
-    .then(() => res.success(val));
+    .then(() => res.success(val))
+    .catch((err) => {
+      res.fail(err);
+      debug(err);
+    });
 });
 
 /**

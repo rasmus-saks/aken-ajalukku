@@ -9,5 +9,8 @@ module.exports = {
   accessKeyId: "",
   secretAccessKey: "",
   region: "",
-  bucket: ""
+  bucket: "",
+
+  //Google maps API key
+  googleMapsApiKey: ""
 };
