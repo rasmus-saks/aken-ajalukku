@@ -29,8 +29,8 @@ block content
         h3.card-title Points of Interest
         .poi-element(v-for="list_poi in pois") {{list_poi.title.EN}}
           a.btn.poi-button.trash.fa.fa-trash-o.fa-lg(v-on:click="removeFromPois(list_poi.id)" href="#")
-          a.btn.poi-button.fa.fa-arrow-down(href="#")
-          a.btn.poi-button.fa.fa-arrow-up(href="#")
+          a.btn.poi-button.fa.fa-arrow-down(v-on:click="movePoiDown(list_poi.id, $event)" href="#")
+          a.btn.poi-button.fa.fa-arrow-up(v-on:click="movePoiUp(list_poi.id, $event)" href="#")
           .clearfix
         .dropdown
           button.btn.btn-block.btn-secondary.dropdown-toggleid#addPoiButton(type="button"  data-toggle="dropdown" aria-haspopup="true" aria-expanded="false") Add PoI

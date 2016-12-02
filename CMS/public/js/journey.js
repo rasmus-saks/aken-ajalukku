@@ -4,6 +4,7 @@ miniToastr.init();
 
 var journey = new Vue({
   el: '#journey',
+
   data: {
     id: null,
     pois: [],
@@ -13,6 +14,7 @@ var journey = new Vue({
     delMessage: "Delete",
     allpois: [],
   },
+
   created: function () {
     let context = this;
     $.get({
@@ -25,7 +27,6 @@ var journey = new Vue({
               Vue.set(context, "title", res.title);
               Vue.set(context, "description", res.description);
               context.addIdsToPois(res.pois)
-
             }
           });
         } else {
@@ -35,6 +36,7 @@ var journey = new Vue({
       }
     });
   },
+
   methods: {
     submitJourney: function () {
       this.$validator.validateAll();
@@ -80,6 +82,7 @@ var journey = new Vue({
         });
       }
     },
+
     del: function () {
       if (this.clicked) {
         $.ajax({
@@ -102,6 +105,7 @@ var journey = new Vue({
         Vue.set(this, "clicked", true);
       }
     },
+
     findPoi: function (id) {
       for (let poi of this.allpois) {
         if (poi.id == id) {
@@ -110,15 +114,15 @@ var journey = new Vue({
       }
       miniToastr.error("Something went wrong. Contact administrator.", "Error");
     },
+
     addPoi: function (id) {
       if (!this.isInPois(id)) {
         this.pois.push(this.findPoi(id));
       } else {
         miniToastr.error("PoI can only be in a journey once", "Error");
       }
-
-
     },
+
     isInPois: function (id) {
       for (let poi of this.pois) {
         if (poi.id == id) {
@@ -127,6 +131,7 @@ var journey = new Vue({
       }
       return false;
     },
+
     getPoiIndexById: function (id) {
       for (var i = 0; i < this.pois.length; i++) {
         if (this.pois[i].id == id) {
@@ -134,9 +139,11 @@ var journey = new Vue({
         }
       }
     },
+
     removeFromPois: function (id) {
       this.pois.splice(this.getPoiIndexById(id), 1);
     },
+
     poisToIdArray: function () {
       let ret = [];
       for (let poi of this.pois) {
@@ -144,9 +151,30 @@ var journey = new Vue({
       }
       return ret
     },
+
     addIdsToPois: function (idarray) {
       for (let id of idarray) {
         this.addPoi(id)
+      }
+    },
+
+    movePoiDown: function (id, event) {
+      if (event) event.preventDefault();
+      let index = this.getPoiIndexById(id);
+      if (index < this.pois.length - 1) {
+        let tmp = this.pois[index];
+        Vue.set(this.pois, index, this.pois[index + 1]);
+        Vue.set(this.pois, index + 1, tmp);
+      }
+    },
+
+    movePoiUp: function (id, event) {
+      if (event) event.preventDefault();
+      let index = this.getPoiIndexById(id);
+      if (index > 0) {
+        let tmp = this.pois[index];
+        Vue.set(this.pois, index, this.pois[index - 1]);
+        Vue.set(this.pois, index - 1, tmp);
       }
     }
   }
