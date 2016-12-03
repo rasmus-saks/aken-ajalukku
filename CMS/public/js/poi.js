@@ -12,7 +12,8 @@ var poi = new Vue({
     video: null,
     img: null,
     clicked: false,
-    delMessage: "Delete"
+    delMessage: "Delete",
+    statustext: "creating"
   },
   created: function () {
     let context = this;
@@ -26,6 +27,7 @@ var poi = new Vue({
           Vue.set(context, "lon", res.lon);
           Vue.set(context, "video", res.video);
           Vue.set(context, "img", res.img);
+          context.statustext = "editing";
         }
       });
     } else {

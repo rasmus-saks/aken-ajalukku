@@ -13,6 +13,7 @@ var journey = new Vue({
     clicked: false,
     delMessage: "Delete",
     allpois: [],
+    statustext: "creating"
   },
 
   created: function () {
@@ -26,7 +27,8 @@ var journey = new Vue({
               Vue.set(context, "id", res.id);
               Vue.set(context, "title", res.title);
               Vue.set(context, "description", res.description);
-              context.addIdsToPois(res.pois)
+              context.addIdsToPois(res.pois);
+              context.statustext = "editing";
             }
           });
         } else {
