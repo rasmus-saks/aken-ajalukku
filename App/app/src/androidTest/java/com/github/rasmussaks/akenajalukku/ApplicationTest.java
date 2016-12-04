@@ -127,7 +127,7 @@ public class ApplicationTest {
         PointOfInterest Epoi = vastus.getPoiById(-5);
         PointOfInterest Tpoi = testimiseks.getPoiById(-5);
         assertEquals(Epoi.getId(), Tpoi.getId());
-        assertEquals(Epoi.getDescription(), Tpoi.getDescription());
+        assertEquals(Epoi.getDescription(null), Tpoi.getDescription(null));
         assertEquals(Epoi.getImageUrl(), Tpoi.getImageUrl());
         assertEquals(Epoi.getLocation(), Tpoi.getLocation());
         assertEquals(Epoi.getMarker(), Tpoi.getMarker());
