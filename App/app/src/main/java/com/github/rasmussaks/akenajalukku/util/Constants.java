@@ -6,6 +6,7 @@ public class Constants {
 
     public static final String SHARED_PREFERENCES_NAME = PACKAGE_NAME + ".SHARED_PREFERENCES_NAME";
     public static final String GEOFENCES_ADDED_KEY = PACKAGE_NAME + ".GEOFENCES_ADDED_KEY";
+    public static final String CACHED_DATA_KEY = PACKAGE_NAME + ".CACHED_DATA_KEY";
 
     public static final long GEOFENCE_EXPIRATION_IN_HOURS = 12;
 
@@ -17,5 +18,5 @@ public class Constants {
 
     public static final int NOTIFICATION_ID = 1;
 
-
+    public static final String DATA_URL = "https://s3.eu-central-1.amazonaws.com/aken-ajalukku-media/data.json";
 }

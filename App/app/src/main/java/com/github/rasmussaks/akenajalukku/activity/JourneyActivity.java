@@ -151,7 +151,7 @@ public class JourneyActivity extends AbstractMapActivity {
         bundle.putBoolean("close", isCloseTo(poi));
         bundle.putBoolean("journey", true);
         bundle.putBoolean("hasNext", currentPoi != getPois().get(getPois().size() - 1));
-        bundle.putString("nextTitle", currentPoi != getPois().get(getPois().size() - 1) ? getPois().get(getPois().indexOf(currentPoi) + 1).getTitle() : "");
+        bundle.putString("nextTitle", currentPoi != getPois().get(getPois().size() - 1) ? getPois().get(getPois().indexOf(currentPoi) + 1).getTitle(getLocale()) : "");
         fragment.setDrawerFragmentListener(this);
         fragment.setArguments(bundle);
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();

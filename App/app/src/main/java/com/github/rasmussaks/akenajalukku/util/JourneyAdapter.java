@@ -18,11 +18,13 @@ public class JourneyAdapter extends BaseAdapter {
     private ArrayList<Journey> journeys;
     private LayoutInflater inflater;
     private MapActivity context;
+    private String locale;
 
-    public JourneyAdapter(ArrayList<Journey> journeys, LayoutInflater inflater, MapActivity context) {
+    public JourneyAdapter(ArrayList<Journey> journeys, LayoutInflater inflater, MapActivity context, String locale) {
         this.journeys = journeys;
         this.inflater = inflater;
         this.context = context;
+        this.locale = locale;
     }
 
 
@@ -52,13 +54,16 @@ public class JourneyAdapter extends BaseAdapter {
         // Lookup view for data population
         TextView journeyTitle = (TextView) convertView.findViewById(R.id.journeyTitle);
         // Populate the data into the template view using the data object
-        journeyTitle.setText(journey.getTitle());
+        journeyTitle.setText(journey.getTitle(locale));
         convertView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 context.onJourneyDetailSelect(journey.getId());
             }
         });
+
+        TextView distance = (TextView) convertView.findViewById(R.id.journeyDistance);
+        distance.setText(journey.getFriendlyDistance());
         // Return the completed view to render on screen
         return convertView;
 

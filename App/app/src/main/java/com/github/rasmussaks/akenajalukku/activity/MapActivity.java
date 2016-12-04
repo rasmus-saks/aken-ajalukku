@@ -7,15 +7,21 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
+import android.util.Log;
 
 import com.github.rasmussaks.akenajalukku.R;
 import com.github.rasmussaks.akenajalukku.fragment.JourneyFragment;
 import com.github.rasmussaks.akenajalukku.manager.GeofenceManager;
+import com.github.rasmussaks.akenajalukku.model.Data;
 import com.github.rasmussaks.akenajalukku.model.PointOfInterest;
 import com.github.rasmussaks.akenajalukku.util.Constants;
+import com.github.rasmussaks.akenajalukku.util.DataFetchListener;
+import com.github.rasmussaks.akenajalukku.util.DataFetcherTask;
 import com.google.android.gms.maps.model.Marker;
 
-public class MapActivity extends AbstractMapActivity {
+import org.json.JSONException;
+
+public class MapActivity extends AbstractMapActivity implements DataFetchListener {
 
     private GeofenceManager geofenceManager;
     private SharedPreferenceChangeListener preferenceChangeListener = new SharedPreferenceChangeListener();
@@ -29,7 +35,17 @@ public class MapActivity extends AbstractMapActivity {
                 (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
         notifMgr.cancel(Constants.NOTIFICATION_ID);
         geofenceManager = new GeofenceManager(this);
-
+        SharedPreferences pref = getSharedPreferences(Constants.SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE);
+        String cached = pref.getString(Constants.CACHED_DATA_KEY, null);
+        if (cached != null) { //Load cached if we have cached data
+            try {
+                Data.instance = new Data(cached);
+                Log.d(Constants.TAG, "Loaded cached data");
+            } catch (JSONException e) {
+                throw new RuntimeException(e);
+            }
+        }
+        new DataFetcherTask().execute(this);
     }
 
     @Override
@@ -78,6 +94,27 @@ public class MapActivity extends AbstractMapActivity {
         }
         return true;
     }
+
+    @Override
+    public void onDataFetched(String data) {
+        SharedPreferences pref = getSharedPreferences(Constants.SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE);
+        String cached = pref.getString(Constants.CACHED_DATA_KEY, null);
+        if (data != null && data.equals(cached)) {
+            Log.d(Constants.TAG, "Fetched data is same as loaded data");
+            return;
+        }
+        if (getMap() != null) { //Re-setup the map if it has already been set up
+            try {
+                Data.instance = new Data(data);
+                setupMap();
+                pref.edit().putString(Constants.CACHED_DATA_KEY, data).apply();
+                Log.d(Constants.TAG, "Updated cached data");
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
 
     private class SharedPreferenceChangeListener implements SharedPreferences.OnSharedPreferenceChangeListener {
         @Override

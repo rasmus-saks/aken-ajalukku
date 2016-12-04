@@ -1,36 +1,49 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical" android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
 
 
 
     <View
         android:layout_width="match_parent"
         android:layout_height="70dp"
-        android:background="@color/colorPrimary"
-        android:layout_marginTop="7dp"
-        android:layout_marginBottom="7dp"
-        android:layout_alignParentRight="true"
         android:layout_alignParentEnd="true"
         android:layout_alignParentLeft="true"
+        android:layout_alignParentRight="true"
         android:layout_alignParentStart="true"
+        android:layout_marginBottom="7dp"
+        android:layout_marginTop="7dp"
+        android:background="@color/colorPrimary"
         android:elevation="3dp">
     </View>
 
     <TextView
-        android:text="Journey Title"
+        android:id="@+id/journeyTitle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textSize="22sp"
-        android:textStyle="normal|bold"
-        android:textColor="@color/whiteText"
-        android:id="@+id/journeyTitle"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
         android:layout_marginLeft="14dp"
         android:layout_marginStart="14dp"
         android:layout_marginTop="12dp"
-        android:elevation="3dp" />
+        android:elevation="3dp"
+        android:text="Journey Title"
+        android:textColor="@color/whiteText"
+        android:textSize="22sp"
+        android:textStyle="normal|bold" />
+
+    <TextView
+        android:id="@+id/journeyDistance"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/journeyTitle"
+        android:layout_alignStart="@+id/journeyTitle"
+        android:layout_below="@+id/journeyTitle"
+        android:elevation="3dp"
+        android:text="5000m"
+        android:textColor="@color/whiteText"
+        android:textSize="14sp" />
 
 </RelativeLayout>

@@ -91,8 +91,8 @@ public class JourneyFragment extends DrawerFragment implements View.OnClickListe
         backButton.setOnClickListener(this);
 
 
-        title.setText(journey.getTitle());
-        description.setText(journey.getDescription());
+        title.setText(journey.getTitle(((AbstractMapActivity) getActivity()).getLocale()));
+        description.setText(journey.getDescription(((AbstractMapActivity) getActivity()).getLocale()));
         Glide.with(this).load(journey.getFirstPoi().getImageUrl()).centerCrop().into(img);
         return view;
     }

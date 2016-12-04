@@ -197,8 +197,6 @@ public abstract class AbstractMapActivity extends LocalizedActivity implements L
     @Override
     public void onMapReady(GoogleMap googleMap) {
         map = googleMap;
-        map.setOnMarkerClickListener(this);
-        map.setMapStyle(MapStyleOptions.loadRawResourceStyle(this, R.raw.map_style));
         Log.i(TAG, "Map is ready");
         setupMap();
     }
@@ -230,6 +228,9 @@ public abstract class AbstractMapActivity extends LocalizedActivity implements L
 
     @SuppressWarnings("MissingPermission")
     void setupMap() {
+        map.clear();
+        map.setOnMarkerClickListener(this);
+        map.setMapStyle(MapStyleOptions.loadRawResourceStyle(this, R.raw.map_style));
         if (locationEnabled) map.setMyLocationEnabled(true);
         map.setPadding(0, getResources().getDimensionPixelSize(R.dimen.mapview_top_padding), 0, 0);
         map.getUiSettings().setMyLocationButtonEnabled(false);
@@ -485,7 +486,7 @@ public abstract class AbstractMapActivity extends LocalizedActivity implements L
         POIDrawerFragment fragment = (POIDrawerFragment) getSupportFragmentManager().findFragmentById(R.id.drawer_container);
         Intent intent = new Intent(this, VideoPlayerActivity.class);
         intent.putExtra("url", fragment.getPoi().getVideoUrl());
-        intent.putExtra("title", fragment.getPoi().getTitle());
+        intent.putExtra("title", fragment.getPoi().getTitle(getLocale()));
         startActivityForResult(intent, VIDEO_PLAYER_RESULT);
     }
 

@@ -2,8 +2,14 @@ package com.github.rasmussaks.akenajalukku.model;
 
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.util.Log;
 
+import com.github.rasmussaks.akenajalukku.util.Constants;
 import com.google.android.gms.maps.model.LatLng;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -24,6 +30,7 @@ public class Data implements Parcelable {
     public static Data instance = new Data(true);
     private ArrayList<PointOfInterest> pois = new ArrayList<>();
     private ArrayList<Journey> journeys = new ArrayList<>();
+    private String json;
 
     public Data(boolean isDummy) {
         if (isDummy) {
@@ -48,10 +55,29 @@ public class Data implements Parcelable {
     protected Data(Parcel in) {
         pois = in.createTypedArrayList(PointOfInterest.CREATOR);
         journeys = in.createTypedArrayList(Journey.CREATOR);
+        json = in.readString();
         for (Journey journey : journeys) {
             journey.initialize(pois);
         }
     }
+
+    public Data(String json) throws JSONException {
+        Log.d(Constants.TAG, "Loading data from json");
+        Log.d(Constants.TAG, json);
+        JSONObject root = new JSONObject(json);
+        JSONArray pois = root.getJSONArray("pois");
+        for (int i = 0; i < pois.length(); i++) {
+            JSONObject poi = (JSONObject) pois.get(i);
+            this.pois.add(new PointOfInterest(poi));
+        }
+        JSONArray journeys = root.getJSONArray("journeys");
+        for (int i = 0; i < journeys.length(); i++) {
+            JSONObject journey = (JSONObject) journeys.get(i);
+            this.journeys.add(new Journey(journey, this.pois));
+        }
+        this.json = json;
+    }
+
 
     public ArrayList<PointOfInterest> getPois() {
         return pois;
@@ -75,6 +101,7 @@ public class Data implements Parcelable {
         }
         return null;
     }
+
     public Journey getJourneyById(int id) {
         for (Journey journey : journeys) {
             if (journey.getId() == id) return journey;
@@ -91,5 +118,10 @@ public class Data implements Parcelable {
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeTypedList(pois);
         dest.writeTypedList(journeys);
+        dest.writeString(json);
+    }
+
+    public String getJson() {
+        return json;
     }
 }

@@ -11,12 +11,13 @@ import android.support.v7.app.AppCompatActivity;
 import java.util.Locale;
 
 public class LocalizedActivity extends AppCompatActivity {
+    private static String language = "en";
     private Locale myLocale = null;
 
     public static void fixLocale(Context context) {
         final SharedPreferences prefs = PreferenceManager
                 .getDefaultSharedPreferences(context);
-        String language = prefs.getString("pref_language", "en");
+        language = prefs.getString("pref_language", "en");
         Locale locale = new Locale(language);
 
         Locale.setDefault(locale);
@@ -28,6 +29,10 @@ public class LocalizedActivity extends AppCompatActivity {
         if (context instanceof LocalizedActivity) {
             ((LocalizedActivity) context).myLocale = locale;
         }
+    }
+
+    public String getLocale() {
+        return language;
     }
 
     @Override

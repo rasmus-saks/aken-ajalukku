@@ -44,7 +44,7 @@ public class GeofenceTransitionsReceiver extends BroadcastReceiver {
 
         String title;
         if (pois.size() == 1) {
-            title = String.format(context.getString(R.string.notification_poi_nearby), pois.get(0).getTitle());
+            title = String.format(context.getString(R.string.notification_poi_nearby), pois.get(0).getTitle(context.getResources().getConfiguration().locale.toString()));
         } else {
             title = String.format(context.getString(R.string.notification_pois_nearby), pois.size());
         }

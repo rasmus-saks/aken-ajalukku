@@ -11,6 +11,7 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.github.rasmussaks.akenajalukku.R;
+import com.github.rasmussaks.akenajalukku.activity.AbstractMapActivity;
 import com.github.rasmussaks.akenajalukku.model.PointOfInterest;
 
 public class POIDrawerFragment extends DrawerFragment implements View.OnClickListener {
@@ -56,8 +57,8 @@ public class POIDrawerFragment extends DrawerFragment implements View.OnClickLis
         title = (TextView) view.findViewById(R.id.poi_title);
         img = (ImageView) view.findViewById(R.id.poi_img);
         description = (TextView) view.findViewById(R.id.poi_description);
-        title.setText(poi.getTitle());
-        description.setText(poi.getDescription());
+        title.setText(poi.getTitle(((AbstractMapActivity) getActivity()).getLocale()));
+        description.setText(poi.getDescription(((AbstractMapActivity) getActivity()).getLocale()));
         ImageButton close = (ImageButton) view.findViewById(R.id.close_button);
         close.setOnClickListener(this);
         downloadButton = (ImageButton) view.findViewById(R.id.download_button);
