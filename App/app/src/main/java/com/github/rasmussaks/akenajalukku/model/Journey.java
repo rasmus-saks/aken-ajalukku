@@ -47,6 +47,8 @@ public class Journey implements Parcelable {
 
     protected Journey(Parcel in) {
         id = in.readInt();
+        titles = new HashMap<>();
+        descriptions = new HashMap<>();
         in.readMap(titles, null);
         in.readMap(descriptions, null);
         poiIdList = new ArrayList<>();

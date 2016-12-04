@@ -57,6 +57,8 @@ public class PointOfInterest implements Parcelable {
     private PointOfInterest(Parcel in) {
         id = in.readInt();
         location = in.readParcelable(LatLng.class.getClassLoader());
+        titles = new HashMap<>();
+        descriptions = new HashMap<>();
         in.readMap(titles, null);
         in.readMap(descriptions, null);
         imageUrl = in.readString();
