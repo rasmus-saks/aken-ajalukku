@@ -8,7 +8,6 @@ import android.preference.ListPreference;
 import android.preference.Preference;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceScreen;
-import android.util.Log;
 
 import com.github.rasmussaks.akenajalukku.R;
 
@@ -22,7 +21,6 @@ public class SettingsFragment extends PreferenceFragment implements SharedPrefer
         getPreferenceScreen().getSharedPreferences().registerOnSharedPreferenceChangeListener(this);
         ListPreference pref = (ListPreference) findPreference("pref_language");
         pref.setSummary(pref.getEntry());
-        Log.d("aken-ajalukku", "Current locale " + activity.getResources().getConfiguration().locale);
     }
 
     @Override
