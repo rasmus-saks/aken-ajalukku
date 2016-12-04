@@ -167,6 +167,7 @@ public class Journey implements Parcelable {
         dest.writeMap(titles);
         dest.writeMap(descriptions);
         dest.writeList(poiIdList);
+        dest.writeInt(distance);
     }
 
 
