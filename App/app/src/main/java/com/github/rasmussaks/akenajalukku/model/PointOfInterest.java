@@ -37,11 +37,13 @@ public class PointOfInterest implements Parcelable {
     private String imageUrl;
     private String videoUrl;
 
-    public PointOfInterest(int id, LatLng location, String title, String description, String imageUrl) {
+    public PointOfInterest(int id, LatLng location,
+                           String title, String description, String imageUrl) {
         this(id, location, title, description, imageUrl, null);
     }
 
-    public PointOfInterest(int id, LatLng location, String title, String description, String imageUrl, String videoUrl) {
+    public PointOfInterest(int id, LatLng location,
+                           String title, String description, String imageUrl, String videoUrl) {
         this.id = id;
         this.location = location;
         titles = new HashMap<>();

@@ -44,7 +44,9 @@ public class GeofenceTransitionsReceiver extends BroadcastReceiver {
 
         String title;
         if (pois.size() == 1) {
-            title = String.format(context.getString(R.string.notification_poi_nearby), pois.get(0).getTitle(context.getResources().getConfiguration().locale.toString()));
+            title = String.format(context.getString(R.string.notification_poi_nearby),
+                    pois.get(0).getTitle(context.getResources()
+                            .getConfiguration().locale.toString()));
         } else {
             title = String.format(context.getString(R.string.notification_pois_nearby), pois.size());
         }
@@ -52,7 +54,8 @@ public class GeofenceTransitionsReceiver extends BroadcastReceiver {
 
         Intent intent = new Intent(context, MapActivity.class);
         intent.putParcelableArrayListExtra("pois", pois);
-        PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+        PendingIntent pendingIntent = PendingIntent.getActivity(context, 0,
+                intent, PendingIntent.FLAG_UPDATE_CURRENT);
         builder.setContentIntent(pendingIntent);
 
         builder.setContentTitle(title);

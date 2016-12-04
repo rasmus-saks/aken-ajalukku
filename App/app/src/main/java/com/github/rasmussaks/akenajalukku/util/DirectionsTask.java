@@ -48,7 +48,8 @@ public class DirectionsTask extends AsyncTask<LatLng, Void, DirectionsTaskRespon
             }
             URLConnection connection =
                     new URL(url).openConnection();
-            BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()), 1024 * 16);
+            BufferedReader reader = new BufferedReader(
+                    new InputStreamReader(connection.getInputStream()), 1024 * 16);
             StringBuilder builder = new StringBuilder();
             String line;
 

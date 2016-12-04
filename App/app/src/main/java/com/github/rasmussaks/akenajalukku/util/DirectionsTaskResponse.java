@@ -19,7 +19,8 @@ public class DirectionsTaskResponse {
     public DirectionsTaskResponse(JSONObject jsonObject) throws JSONException {
         JSONObject route = jsonObject.getJSONArray("routes").getJSONObject(0);
         JSONObject leg = route.getJSONArray("legs").getJSONObject(0);
-        List<LatLng> polylinePoints = PolyUtil.decode(route.getJSONObject("overview_polyline").getString("points"));
+        List<LatLng> polylinePoints =
+                PolyUtil.decode(route.getJSONObject("overview_polyline").getString("points"));
         polylineOptions = new PolylineOptions().addAll(polylinePoints).width(5f).color(Color.RED);
         distanceString = leg.getJSONObject("distance").getString("text");
         distance = leg.getJSONObject("distance").getInt("value");
