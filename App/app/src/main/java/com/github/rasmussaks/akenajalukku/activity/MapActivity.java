@@ -34,7 +34,6 @@ public class MapActivity extends AbstractMapActivity implements DataFetchListene
         NotificationManager notifMgr =
                 (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
         notifMgr.cancel(Constants.NOTIFICATION_ID);
-        geofenceManager = new GeofenceManager(this);
         SharedPreferences pref = getSharedPreferences(Constants.SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE);
         String cached = pref.getString(Constants.CACHED_DATA_KEY, null);
         if (cached != null) { //Load cached if we have cached data
@@ -45,6 +44,8 @@ public class MapActivity extends AbstractMapActivity implements DataFetchListene
                 throw new RuntimeException(e);
             }
         }
+        if (Data.instance != null)
+            geofenceManager = new GeofenceManager(this);
         new DataFetcherTask().execute(this);
     }
 
@@ -59,7 +60,7 @@ public class MapActivity extends AbstractMapActivity implements DataFetchListene
         super.onConnected(bundle);
         SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(this);
         pref.registerOnSharedPreferenceChangeListener(preferenceChangeListener);
-        if (pref.getBoolean("pref_notifications", true)) {
+        if (pref.getBoolean("pref_notifications", true) && geofenceManager != null) {
             geofenceManager.addGeofences();
         }
     }
@@ -103,16 +104,20 @@ public class MapActivity extends AbstractMapActivity implements DataFetchListene
             Log.d(Constants.TAG, "Fetched data is same as loaded data");
             return;
         }
-        if (getMap() != null) { //Re-setup the map if it has already been set up
-            try {
-                Data.instance = new Data(data);
-                setupMap();
-                pref.edit().putString(Constants.CACHED_DATA_KEY, data).apply();
-                Log.d(Constants.TAG, "Updated cached data");
-            } catch (JSONException e) {
-                e.printStackTrace();
+        try {
+            Data.instance = new Data(data);
+            geofenceManager = new GeofenceManager(this);
+            if (pref.getBoolean("pref_notifications", true) && getGoogleApiClient() != null && getGoogleApiClient().isConnected()) {
+                geofenceManager.addGeofences();
             }
+            pref.edit().putString(Constants.CACHED_DATA_KEY, data).apply();
+            if (getMap() != null) { //Re-setup the map if it has already been set up
+                setupMap();
+            }
+        } catch (JSONException e) {
+            Log.e(Constants.TAG, "Failed to load data", e);
         }
+        Log.d(Constants.TAG, "Updated cached data");
     }
 
 
