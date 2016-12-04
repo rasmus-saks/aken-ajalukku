@@ -45,15 +45,11 @@ public class JourneyAdapter extends BaseAdapter {
     @NonNull
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-        // Get the data item for this position
         final Journey journey = (Journey) getItem(position);
-        // Check if an existing view is being reused, otherwise inflate the view
         if (convertView == null) {
             convertView = inflater.inflate(R.layout.journey_item, parent, false);
         }
-        // Lookup view for data population
         TextView journeyTitle = (TextView) convertView.findViewById(R.id.journeyTitle);
-        // Populate the data into the template view using the data object
         journeyTitle.setText(journey.getTitle(locale));
         convertView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -64,7 +60,6 @@ public class JourneyAdapter extends BaseAdapter {
 
         TextView distance = (TextView) convertView.findViewById(R.id.journeyDistance);
         distance.setText(journey.getFriendlyDistance());
-        // Return the completed view to render on screen
         return convertView;
 
     }
