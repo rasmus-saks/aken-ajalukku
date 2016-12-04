@@ -6,7 +6,7 @@ It should communicate to the backend CMS through an API in order to get a list o
 to change the available PoIs without having to update the application itself.
 
 # Building
-For building, we use Gradle. It is highly recommended to import this project into [Android Studio](https://developer.android.com/studio/index.html) and let it handle the building. Start with getting the gradle wrapper using `gradle wrapper`.
+For building, we use Gradle. It is highly recommended to import this project into [Android Studio](https://developer.android.com/studio/index.html) and let it handle the building. Make sure that Android Studio is at least version 2.2. Start with getting the gradle wrapper using `gradle wrapper`.
 
 To build the debug version, use
 ```
