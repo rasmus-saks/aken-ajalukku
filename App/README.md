@@ -8,6 +8,8 @@ to change the available PoIs without having to update the application itself.
 # Building
 For building, we use Gradle. It is highly recommended to import this project into [Android Studio](https://developer.android.com/studio/index.html) and let it handle the building. Make sure that Android Studio is at least version 2.2. Start with getting the gradle wrapper using `gradle wrapper`.
 
+Before building, make sure you have set the `GOOGLE_MAPS_KEY` property in your `~/.gradle/gradle.properties` file to your own Google Maps API key.
+
 To build the debug version, use
 ```
 gradlew assembleDebug
