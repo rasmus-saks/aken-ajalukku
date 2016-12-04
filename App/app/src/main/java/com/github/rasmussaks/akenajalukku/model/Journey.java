@@ -35,14 +35,14 @@ public class Journey implements Parcelable {
     private Map<String, String> descriptions;
     private int distance;
 
-    public Journey(int id, List<Integer> poiIdList, String title, String description, List<PointOfInterest> allpoi) {
+    public Journey(int id, List<Integer> poiIdList, String title, String description, List<PointOfInterest> allPois) {
         this.id = id;
         this.poiIdList = poiIdList;
         titles = new HashMap<>();
         descriptions = new HashMap<>();
         this.titles.put("en", title);
         this.descriptions.put("en", description);
-        initialize(allpoi);
+        initialize(allPois);
     }
 
     protected Journey(Parcel in) {
@@ -54,7 +54,7 @@ public class Journey implements Parcelable {
         distance = in.readInt();
     }
 
-    public Journey(JSONObject root, List<PointOfInterest> allpoi) throws JSONException {
+    public Journey(JSONObject root, List<PointOfInterest> allPois) throws JSONException {
         id = root.getInt("id");
         titles = new HashMap<>();
         JSONObject title = root.getJSONObject("title");
@@ -76,7 +76,7 @@ public class Journey implements Parcelable {
             poiIdList.add(pois.getInt(i));
         }
         distance = root.getInt("distance");
-        initialize(allpoi);
+        initialize(allPois);
     }
 
 
@@ -116,11 +116,11 @@ public class Journey implements Parcelable {
         return poiIdList;
     }
 
-    void initialize(List<PointOfInterest> allpoi) {
+    void initialize(List<PointOfInterest> allPois) {
         poiList = new ArrayList<>();
         for (int poiId : poiIdList) {
             boolean found = false;
-            for (PointOfInterest poi : allpoi) {
+            for (PointOfInterest poi : allPois) {
                 if (poi.getId() == poiId) {
                     poiList.add(poi);
                     found = true;
