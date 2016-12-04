@@ -5,9 +5,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.ListPreference;
-import android.preference.Preference;
 import android.preference.PreferenceFragment;
-import android.preference.PreferenceScreen;
 
 import com.github.rasmussaks.akenajalukku.R;
 
@@ -31,18 +29,6 @@ public class SettingsFragment extends PreferenceFragment implements SharedPrefer
         }
     }
 
-    @Override
-    public boolean onPreferenceTreeClick(PreferenceScreen preferenceScreen, Preference preference) {
-        switch (preference.getKey()) {
-            case "key_resetTutorial":
-                //TODO
-                break;
-            case "key_clearData":
-                //TODO
-                break;
-        }
-        return super.onPreferenceTreeClick(preferenceScreen, preference);
-    }
 
     @Override
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {

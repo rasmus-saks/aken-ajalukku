@@ -5,6 +5,7 @@ import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.os.Bundle;
+import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 
@@ -47,7 +48,13 @@ public class LocalizedActivity extends AppCompatActivity {
 
         if (myLocale != null && !myLocale.getLanguage().equals(Locale.getDefault().getLanguage())) {
             myLocale = null;
-            recreate();
+            Handler handler = new Handler();
+            handler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    recreate();
+                }
+            }, 1);
         }
     }
 }
