@@ -104,6 +104,10 @@ public class MapActivity extends AbstractMapActivity implements DataFetchListene
             Log.d(Constants.TAG, "Fetched data is same as loaded data");
             return;
         }
+        if (data == null) {
+            Log.d(Constants.TAG, "No data found");
+            return;
+        }
         try {
             Data.instance = new Data(data);
             geofenceManager = new GeofenceManager(this);
