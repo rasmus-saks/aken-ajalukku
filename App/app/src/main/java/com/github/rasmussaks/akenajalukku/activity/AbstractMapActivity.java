@@ -291,6 +291,9 @@ public abstract class AbstractMapActivity extends LocalizedActivity implements L
             if (intentPois != null) {
                 pois = intentPois;
                 intentPois = null;
+                if (pois.size() == 1) {
+                    openPoiDetailDrawer(pois.get(0));
+                }
             }
             for (PointOfInterest poi : pois) {
                 bounds.include(poi.getLocation());
