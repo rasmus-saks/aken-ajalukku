@@ -138,9 +138,6 @@ public abstract class AbstractMapActivity extends LocalizedActivity implements L
         super.onPause();
         visible = false;
         Log.d(TAG, "Paused " + getClass().getSimpleName());
-        if (googleApiClient != null) {
-            LocationServices.FusedLocationApi.removeLocationUpdates(googleApiClient, this);
-        }
 
     }
 
