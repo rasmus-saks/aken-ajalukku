@@ -37,6 +37,7 @@ public class DirectionsTask extends AsyncTask<LatLng, Void, DirectionsTaskRespon
                     "?key=" + context.getString(R.string.google_maps_key)
                     + "&origin=" + start.latitude + "," + start.longitude
                     + "&destination=" + end.latitude + "," + end.longitude
+                    + "&mode=walking"
                     + "&units=metric";
             if (params.length > 2) {
                 List<String> waypoints = new ArrayList<>();
