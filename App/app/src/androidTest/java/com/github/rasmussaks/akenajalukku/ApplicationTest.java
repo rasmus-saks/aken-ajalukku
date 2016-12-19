@@ -75,7 +75,7 @@ public class ApplicationTest {
 
     @Test
     public void testMarker() throws Exception {
-        UiObject marker = device.findObject(new UiSelector().descriptionContains("Town hall square"));
+        UiObject marker = device.findObject(new UiSelector().descriptionContains("Town Hall Square"));
         marker.click();
     }
 
@@ -88,7 +88,7 @@ public class ApplicationTest {
 
     @Test
     public void testMarkerDetails() throws Exception {
-        UiObject marker = device.findObject(new UiSelector().descriptionContains("Town hall square"));
+        UiObject marker = device.findObject(new UiSelector().descriptionContains("Town Hall Square"));
         marker.click();
         assertTrue("Failed to find the marker detailed view", device.wait(Until.hasObject(By.res(APP_PACKAGE, "the_story")), 10000));
     }
