@@ -4,6 +4,7 @@ import android.app.NotificationManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.location.Location;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
@@ -23,8 +24,13 @@ import org.json.JSONException;
 
 public class MapActivity extends AbstractMapActivity implements DataFetchListener {
 
+    static boolean visible;
     private GeofenceManager geofenceManager;
     private SharedPreferenceChangeListener preferenceChangeListener = new SharedPreferenceChangeListener();
+
+    public static boolean isVisible() {
+        return visible;
+    }
 
 
     @Override
@@ -82,8 +88,22 @@ public class MapActivity extends AbstractMapActivity implements DataFetchListene
     protected void onResume() {
         super.onResume();
         if (getMap() != null) setupMap();
+        visible = true;
     }
 
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        visible = false;
+    }
+
+    @Override
+    public void onLocationChanged(Location location) {
+        if (!MapActivity.isVisible()) return;
+        super.onLocationChanged(location);
+        highlightClosePois();
+    }
 
     @Override
     public boolean onMarkerClick(Marker marker) {

@@ -57,7 +57,6 @@ public abstract class AbstractMapActivity extends LocalizedActivity implements L
 
     private static final int REQUEST_TO_SETUP_MAP = 1;
     private static final int VIDEO_PLAYER_RESULT = 1;
-    private static boolean visible;
     private boolean locationEnabled = false;
     private GoogleMap map;
     private GoogleApiClient googleApiClient;
@@ -67,10 +66,6 @@ public abstract class AbstractMapActivity extends LocalizedActivity implements L
     private SlidingUpPanelLayout drawerLayout;
     private List<PointOfInterest> highlightedPois = new ArrayList<>();
     private PointOfInterest currentDirections;
-
-    public static boolean isVisible() {
-        return visible;
-    }
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -124,7 +119,6 @@ public abstract class AbstractMapActivity extends LocalizedActivity implements L
     @Override
     protected void onResume() {
         super.onResume();
-        visible = true;
         if (googleApiClient != null) {
             if (googleApiClient.isConnected())
                 setupGoogleApiClient();
@@ -136,7 +130,6 @@ public abstract class AbstractMapActivity extends LocalizedActivity implements L
     @Override
     protected void onPause() {
         super.onPause();
-        visible = false;
         Log.d(TAG, "Paused " + getClass().getSimpleName());
 
     }
@@ -289,7 +282,7 @@ public abstract class AbstractMapActivity extends LocalizedActivity implements L
                 pois = intentPois;
                 intentPois = null;
                 if (pois.size() == 1) {
-                    openPoiDetailDrawer(pois.get(0));
+                    openPoiDetailDrawer(Data.instance.getPoiById(pois.get(0).getId()));
                 }
             }
             for (PointOfInterest poi : pois) {
@@ -300,7 +293,7 @@ public abstract class AbstractMapActivity extends LocalizedActivity implements L
                 bounds.include(new LatLng(lastLocation.getLatitude(),
                         lastLocation.getLongitude()));
             }
-            update = CameraUpdateFactory.newLatLngBounds(bounds.build(), 200);
+            update = CameraUpdateFactory.newLatLngBounds(bounds.build(), 250);
 
         }
         if (update != null) {
@@ -386,7 +379,7 @@ public abstract class AbstractMapActivity extends LocalizedActivity implements L
             for (LatLng point : points) {
                 bnds.include(point);
             }
-            map.animateCamera(CameraUpdateFactory.newLatLngBounds(bnds.build(), 200));
+            map.animateCamera(CameraUpdateFactory.newLatLngBounds(bnds.build(), 250));
             currentPolyline = map.addPolyline(response.getPolylineOptions());
         }
     }
@@ -464,6 +457,7 @@ public abstract class AbstractMapActivity extends LocalizedActivity implements L
     @Override
     public void onCloseDrawer() {
         drawerLayout.setPanelState(SlidingUpPanelLayout.PanelState.HIDDEN);
+        resetCamera(true);
     }
 
     public void onJourneyButtonClick(View view) {
@@ -474,7 +468,6 @@ public abstract class AbstractMapActivity extends LocalizedActivity implements L
     public void onLocationChanged(Location location) {
         lastLocation = location;
         Log.v(TAG, "Location changed");
-        highlightClosePois();
     }
 
     @Override

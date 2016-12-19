@@ -9,6 +9,7 @@ import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 
 import com.github.rasmussaks.akenajalukku.R;
+import com.github.rasmussaks.akenajalukku.activity.JourneyActivity;
 import com.github.rasmussaks.akenajalukku.activity.MapActivity;
 import com.github.rasmussaks.akenajalukku.model.Data;
 import com.github.rasmussaks.akenajalukku.model.PointOfInterest;
@@ -39,7 +40,7 @@ public class GeofenceTransitionsReceiver extends BroadcastReceiver {
     }
 
     private void createNotification(Context context, ArrayList<PointOfInterest> pois) {
-        if (MapActivity.isVisible()) return;
+        if (MapActivity.isVisible() || JourneyActivity.isVisible()) return;
         NotificationCompat.Builder builder = new NotificationCompat.Builder(context);
 
         String title;

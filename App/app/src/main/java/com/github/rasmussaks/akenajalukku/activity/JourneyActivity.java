@@ -1,6 +1,7 @@
 package com.github.rasmussaks.akenajalukku.activity;
 
 import android.content.Intent;
+import android.location.Location;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -27,10 +28,34 @@ import java.util.ArrayList;
 import static com.github.rasmussaks.akenajalukku.util.Constants.TAG;
 
 public class JourneyActivity extends AbstractMapActivity {
+    static boolean visible;
     private Journey journey;
     private PointOfInterest currentPoi;
     private boolean closeToCurrent;
     private boolean moveToNext;
+
+    public static boolean isVisible() {
+        return visible;
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        visible = true;
+    }
+
+    @Override
+    public void onLocationChanged(Location location) {
+        if (!JourneyActivity.isVisible()) return;
+        super.onLocationChanged(location);
+        highlightClosePois();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        MapActivity.visible = false;
+    }
 
     @Override
     public void setContentView() {
